@@ -1,8 +1,15 @@
+/* main.cpp
+ * The entry point for the program.
+ */
+
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include "graphics.h"
 
 int main(void)
 {
+  // TODO: use this Graphics class
+  // Graphics graphics;
   SDL_Window *window = NULL;
   SDL_Renderer *renderer = NULL;
 
