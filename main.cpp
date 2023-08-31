@@ -7,7 +7,7 @@ int main(void)
   SDL_Renderer *renderer = NULL;
 
   SDL_Init(SDL_INIT_EVERYTHING);
-  SDL_CreateWindowAndRenderer(480, 320, 0, &window, &renderer);
+  SDL_CreateWindowAndRenderer(640, 480, 0, &window, &renderer);
 
   bool quit = false;
 
