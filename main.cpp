@@ -16,7 +16,7 @@ int last_frame_time = 0;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
-bool initialiseWindow()
+bool initialiseWindow(void)
 {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
   {
@@ -39,11 +39,11 @@ bool initialiseWindow()
   return true;
 }
 
-void processInput() {}
+void processInput(void) {}
 
-void updateGame() {}
+void updateGame(void) {}
 
-void renderOutput() {}
+void renderOutput(void) {}
 
 int main(void)
 {
