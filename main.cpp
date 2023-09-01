@@ -18,6 +18,25 @@ SDL_Renderer *renderer = NULL;
 
 bool initialiseWindow()
 {
+  if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+  {
+    std::cout << "SDL could not initialise! SDL_Error: " << SDL_GetError() << std::endl;
+    return false;
+  }
+  window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+  if (!window)
+  {
+    std::cout << "SDL could not create window! SDL_Error: " << SDL_GetError() << std::endl;
+  }
+  renderer = SDL_CreateRenderer(window, -1, 0);
+
+  if (!renderer)
+  {
+    std::cout << "SDL could not create renderer! SDL_Error: " << SDL_GetError() << std::endl;
+  }
+
+  return true;
 }
 
 void processInput() {}
