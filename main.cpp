@@ -154,6 +154,13 @@ void renderOutput(void)
   SDL_RenderPresent(renderer);
 }
 
+void destroyWindow(void)
+{
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
+}
+
 int main(void)
 {
   game_is_running = initialiseWindow();
@@ -166,6 +173,8 @@ int main(void)
     updateGame();
     renderOutput();
   }
+
+  destroyWindow();
 
   return 0;
 }
