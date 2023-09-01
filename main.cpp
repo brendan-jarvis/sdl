@@ -31,14 +31,13 @@ void setup(void)
   // initialise the star background
 
   // initialise the player
-  // x and y in the center
   player.x = (SCREEN_WIDTH / 2) - (player.width / 2);
   player.y = (SCREEN_HEIGHT / 2) - (player.height / 2);
   player.width = 20;
   player.height = 20;
   player.velX = 0;
   player.velY = 0;
-  player.speed = 5;
+  player.speed = 1;
   player.is_alive = true;
   player.score = 0;
   player.lives = 3;
@@ -113,7 +112,34 @@ void processInput(void)
   }
 }
 
-void updateGame(void) {}
+void updateGame(void)
+{
+  float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
+
+  last_frame_time = SDL_GetTicks();
+
+  // Update player position
+  player.x += player.velX * delta_time;
+  player.y += player.velY * delta_time;
+
+  // Check for collision with window bounds
+  if (player.x <= 0)
+  {
+    player.x = 0;
+  }
+  if (player.x >= SCREEN_WIDTH - player.width)
+  {
+    player.x = SCREEN_WIDTH - player.width;
+  }
+  if (player.y <= 0)
+  {
+    player.y = 0;
+  }
+  if (player.y >= SCREEN_HEIGHT - player.height)
+  {
+    player.y = SCREEN_HEIGHT - player.height;
+  }
+}
 
 void renderOutput(void)
 {
