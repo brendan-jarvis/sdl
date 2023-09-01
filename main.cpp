@@ -71,6 +71,46 @@ bool initialiseWindow(void)
 
 void processInput(void)
 {
+  while (SDL_PollEvent(&event))
+  {
+    switch (event.type)
+    {
+    case SDL_QUIT:
+      game_is_running = false;
+      break;
+    case SDL_KEYDOWN:
+      switch (event.key.keysym.sym)
+      {
+      case SDLK_ESCAPE:
+        game_is_running = false;
+        break;
+      case SDLK_LEFT:
+        player.velX = -player.speed;
+        break;
+      case SDLK_a:
+        player.velX = -player.speed;
+        break;
+      case SDLK_RIGHT:
+        player.velX = player.speed;
+        break;
+      case SDLK_d:
+        player.velX = player.speed;
+        break;
+      case SDLK_UP:
+        player.velY = -player.speed;
+        break;
+      case SDLK_w:
+        player.velY = -player.speed;
+        break;
+      case SDLK_DOWN:
+        player.velY = player.speed;
+        break;
+      case SDLK_s:
+        player.velY = player.speed;
+        break;
+      }
+    }
+  }
 }
 
 void updateGame(void) {}
