@@ -10,7 +10,7 @@
 class Player
 {
 public:
-  int x, y, width, height, velX, velY, speed, lives, score;
+  int x, y, width, height, rotation, velocity, speed, lives, score;
   bool is_alive;
 };
 
@@ -33,10 +33,10 @@ void setup(void)
   // initialise the player
   player.x = (SCREEN_WIDTH / 2) - (player.width / 2);
   player.y = (SCREEN_HEIGHT / 2) - (player.height / 2);
-  player.width = 20;
-  player.height = 20;
-  player.velX = 0;
-  player.velY = 0;
+  player.width = 10;
+  player.height = 10;
+  player.rotation = 0;
+  player.velocity = 0;
   player.speed = 1;
   player.is_alive = true;
   player.score = 0;
@@ -83,29 +83,11 @@ void processInput(void)
       case SDLK_ESCAPE:
         game_is_running = false;
         break;
-      case SDLK_LEFT:
-        player.velX = -player.speed;
-        break;
-      case SDLK_a:
-        player.velX = -player.speed;
-        break;
-      case SDLK_RIGHT:
-        player.velX = player.speed;
-        break;
-      case SDLK_d:
-        player.velX = player.speed;
-        break;
       case SDLK_UP:
-        player.velY = -player.speed;
-        break;
-      case SDLK_w:
-        player.velY = -player.speed;
+        player.velocity += player.speed;
         break;
       case SDLK_DOWN:
-        player.velY = player.speed;
-        break;
-      case SDLK_s:
-        player.velY = player.speed;
+        player.velocity -= player.speed;
         break;
       }
     }
@@ -119,8 +101,9 @@ void updateGame(void)
   last_frame_time = SDL_GetTicks();
 
   // Update player position
-  player.x += player.velX * delta_time;
-  player.y += player.velY * delta_time;
+  // Based on rotation and velocity
+  player.x += player.velocity * cos(player.rotation * M_PI / 180) * delta_time;
+  player.y += player.velocity * sin(player.rotation * M_PI / 180) * delta_time;
 
   // Check for collision with window bounds
   if (player.x <= 0)
