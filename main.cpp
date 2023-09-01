@@ -24,14 +24,16 @@ int last_frame_time = 0;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player player;
+SDL_Event event;
 
 void setup(void)
 {
   // initialise the star background
 
   // initialise the player
-  player.x = 20;
-  player.y = 20;
+  // x and y in the center
+  player.x = (SCREEN_WIDTH / 2) - (player.width / 2);
+  player.y = (SCREEN_HEIGHT / 2) - (player.height / 2);
   player.width = 20;
   player.height = 20;
   player.velX = 0;
@@ -67,11 +69,24 @@ bool initialiseWindow(void)
   return true;
 }
 
-void processInput(void) {}
+void processInput(void)
+{
+}
 
 void updateGame(void) {}
 
-void renderOutput(void) {}
+void renderOutput(void)
+{
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderClear(renderer);
+
+  // TODO: triangular player ship
+  SDL_Rect playerRect = {player.x, player.y, player.width, player.height};
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_RenderFillRect(renderer, &playerRect);
+
+  SDL_RenderPresent(renderer);
+}
 
 int main(void)
 {
