@@ -2,93 +2,40 @@
  * The entry point for the program.
  */
 
-#include <stdlib.h>
+#include <iostream>
+// #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include "graphics.h"
+
+// Constants
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
+
+// Globals
+int game_is_running = false;
+int last_frame_time = 0;
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+
+bool initialiseWindow()
+{
+}
+
+void processInput() {}
+
+void updateGame() {}
+
+void renderOutput() {}
 
 int main(void)
 {
-  // TODO: use this Graphics class
-  // Graphics graphics;
-  SDL_Window *window = NULL;
-  SDL_Renderer *renderer = NULL;
+  game_is_running = initialiseWindow();
 
-  SDL_Init(SDL_INIT_EVERYTHING);
-  SDL_CreateWindowAndRenderer(640, 480, 0, &window, &renderer);
-
-  bool quit = false;
-
-  // Event handler
-  SDL_Event e;
-
-  // Color variables
-  int r = 255;
-  int g = 0;
-  int b = 0;
-
-  // While application is running
-  while (!quit)
+  while (game_is_running)
   {
-    // Handle events on queue
-    while (SDL_PollEvent(&e) != 0) // poll for event
-    {
-      // User requests quit
-      if (e.type == SDL_QUIT) // unless player manually quits
-      {
-        quit = true;
-      }
-    }
-
-    // Delay to reduce CPU usage
-    SDL_Delay(10);
-
-    // Check for key press
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_ESCAPE])
-    {
-      quit = true;
-    }
-
-    // Reset color to red when user presses 'r'
-    if (state[SDL_SCANCODE_R])
-    {
-      r = 255;
-      g = 0;
-      b = 0;
-
-      SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
-      SDL_RenderClear(renderer);
-      SDL_RenderPresent(renderer);
-    }
-
-    // Reset color to green when user presses 'g'
-    if (state[SDL_SCANCODE_G])
-    {
-      r = 0;
-      g = 255;
-      b = 0;
-
-      SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
-      SDL_RenderClear(renderer);
-      SDL_RenderPresent(renderer);
-    }
-
-    // Reset color to blue when user presses 'b'
-    if (state[SDL_SCANCODE_B])
-    {
-      r = 0;
-      g = 0;
-      b = 255;
-
-      SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
-      SDL_RenderClear(renderer);
-      SDL_RenderPresent(renderer);
-    }
+    processInput();
+    updateGame();
+    renderOutput();
   }
 
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-
-  return (0);
+  return 0;
 }
