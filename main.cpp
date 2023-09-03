@@ -90,10 +90,16 @@ void processInput(void)
         game_is_running = false;
         break;
       case SDLK_UP:
-        player.acceleration += player.speed;
+        player.y -= player.speed;
         break;
       case SDLK_DOWN:
-        player.acceleration -= player.speed;
+        player.y += player.speed;
+        break;
+      case SDLK_LEFT:
+        player.x -= player.speed;
+        break;
+      case SDLK_RIGHT:
+        player.x += player.speed;
         break;
       }
     }
