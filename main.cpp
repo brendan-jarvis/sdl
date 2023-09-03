@@ -12,6 +12,7 @@ class Player
 public:
   float x, y, rotation, acceleration, speed;
   int width, height, lives, score;
+  SDL_Point linePoints[4];
   bool is_alive;
 };
 
@@ -35,13 +36,17 @@ void setup(void)
   player.x = (SCREEN_WIDTH / 2) - (player.width / 2);
   player.y = (SCREEN_HEIGHT / 2) - (player.height / 2);
   player.width = 10;
-  player.height = 10;
+  player.height = 20;
   player.rotation = 0;
   player.acceleration = 0;
   player.speed = 1;
   player.is_alive = true;
   player.score = 0;
   player.lives = 3;
+  player.linePoints[0] = {(int)player.x - player.width, (int)player.y};
+  player.linePoints[1] = {(int)player.x, (int)player.y - player.height};
+  player.linePoints[2] = {(int)player.x + player.width, (int)player.y};
+  player.linePoints[3] = {(int)player.x - player.width, (int)player.y};
 
   // initialise the asteroids
 }
@@ -86,11 +91,9 @@ void processInput(void)
         break;
       case SDLK_UP:
         player.acceleration += player.speed;
-        std::cout << "Player acceleration: " << player.acceleration << std::endl;
         break;
       case SDLK_DOWN:
         player.acceleration -= player.speed;
-        std::cout << "Player acceleration: " << player.acceleration << std::endl;
         break;
       }
     }
@@ -110,8 +113,17 @@ void updateGame(void)
   player.x += player.acceleration * delta_time;
   player.y += player.acceleration * delta_time;
 
-  std::cout << "Player x: " << player.x << std::endl;
-  std::cout << "Player y: " << player.y << std::endl;
+  // Update player rotation
+  // Based on acceleration
+  player.rotation += player.acceleration * delta_time;
+
+  // Update player line points
+  player.linePoints[0] = {(int)player.x - player.width, (int)player.y};
+  player.linePoints[1] = {(int)player.x, (int)player.y - player.height};
+  player.linePoints[2] = {(int)player.x + player.width, (int)player.y};
+  player.linePoints[3] = {(int)player.x - player.width, (int)player.y};
+
+  // TODO: add friction to player acceleration
 
   // Check for collision with window bounds
   if (player.x <= 0)
@@ -138,9 +150,10 @@ void renderOutput(void)
   SDL_RenderClear(renderer);
 
   // TODO: triangular player ship
-  SDL_Rect playerRect = {player.x, player.y, player.width, player.height};
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-  SDL_RenderFillRect(renderer, &playerRect);
+  SDL_RenderDrawLines(renderer, player.linePoints, 4);
+  // SDL_Point points[4] = {{310, 240}, {320, 220}, {330, 240}, {310, 240}};
+  // SDL_RenderDrawLines(renderer, points, 4);
 
   SDL_RenderPresent(renderer);
 }
