@@ -10,7 +10,8 @@
 class Player
 {
 public:
-  int x, y, width, height, rotation, velocity, speed, lives, score;
+  float x, y, rotation, acceleration, speed;
+  int width, height, lives, score;
   bool is_alive;
 };
 
@@ -36,7 +37,7 @@ void setup(void)
   player.width = 10;
   player.height = 10;
   player.rotation = 0;
-  player.velocity = 0;
+  player.acceleration = 0;
   player.speed = 1;
   player.is_alive = true;
   player.score = 0;
@@ -84,10 +85,12 @@ void processInput(void)
         game_is_running = false;
         break;
       case SDLK_UP:
-        player.velocity += player.speed;
+        player.acceleration += player.speed;
+        std::cout << "Player acceleration: " << player.acceleration << std::endl;
         break;
       case SDLK_DOWN:
-        player.velocity -= player.speed;
+        player.acceleration -= player.speed;
+        std::cout << "Player acceleration: " << player.acceleration << std::endl;
         break;
       }
     }
@@ -101,9 +104,14 @@ void updateGame(void)
   last_frame_time = SDL_GetTicks();
 
   // Update player position
-  // Based on rotation and velocity
-  player.x += player.velocity * cos(player.rotation * M_PI / 180) * delta_time;
-  player.y += player.velocity * sin(player.rotation * M_PI / 180) * delta_time;
+  // Based on rotation and acceleration
+  // player.x += player.acceleration * cos(player.rotation * M_PI / 180) * delta_time;
+  // player.y += player.acceleration * sin(player.rotation * M_PI / 180) * delta_time;
+  player.x += player.acceleration * delta_time;
+  player.y += player.acceleration * delta_time;
+
+  std::cout << "Player x: " << player.x << std::endl;
+  std::cout << "Player y: " << player.y << std::endl;
 
   // Check for collision with window bounds
   if (player.x <= 0)
