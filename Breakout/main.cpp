@@ -214,6 +214,23 @@ void updateGame(void)
       ball.direction = -ball.direction;
     }
   }
+
+  // check for ball collision with the bricks
+  for (int i = 0; i < 24; i++)
+  {
+    if (bricks[i].is_alive)
+    {
+      if (ball.y + ball.height >= bricks[i].y && ball.y <= bricks[i].y + bricks[i].height)
+      {
+        if (ball.x + ball.width >= bricks[i].x && ball.x <= bricks[i].x + bricks[i].width)
+        {
+          bricks[i].is_alive = false;
+          ball.direction = -ball.direction;
+          player.score++;
+        }
+      }
+    }
+  }
 }
 
 void renderOutput(void)
