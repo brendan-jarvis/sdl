@@ -10,7 +10,7 @@
 class Player
 {
 public:
-  float x, y, rotation, acceleration, speed;
+  float x, y, rotation, acceleration, speed, turnspeed;
   int width, height, lives, score;
   SDL_Point linePoints[4];
   bool is_alive;
@@ -35,11 +35,12 @@ void setup(void)
   // initialise the player
   player.x = (SCREEN_WIDTH / 2) - (player.width / 2);
   player.y = (SCREEN_HEIGHT / 2) - (player.height / 2);
-  player.width = 10;
-  player.height = 20;
+  player.width = 5;
+  player.height = 10;
   player.rotation = 0;
   player.acceleration = 0;
-  player.speed = 1;
+  player.speed = 3;
+  player.turnspeed = 1;
   player.is_alive = true;
   player.score = 0;
   player.lives = 3;
@@ -90,16 +91,16 @@ void processInput(void)
         game_is_running = false;
         break;
       case SDLK_UP:
-        player.y -= player.speed;
+        player.acceleration += player.speed;
         break;
       case SDLK_DOWN:
-        player.y += player.speed;
+        player.acceleration -= player.speed;
         break;
       case SDLK_LEFT:
-        player.x -= player.speed;
+        player.rotation -= player.turnspeed;
         break;
       case SDLK_RIGHT:
-        player.x += player.speed;
+        player.rotation += player.turnspeed;
         break;
       }
     }
@@ -113,15 +114,10 @@ void updateGame(void)
   last_frame_time = SDL_GetTicks();
 
   // Update player position
-  // Based on rotation and acceleration
-  // player.x += player.acceleration * cos(player.rotation * M_PI / 180) * delta_time;
-  // player.y += player.acceleration * sin(player.rotation * M_PI / 180) * delta_time;
   player.x += player.acceleration * delta_time;
   player.y += player.acceleration * delta_time;
 
-  // Update player rotation
-  // Based on acceleration
-  player.rotation += player.acceleration * delta_time;
+  // TODO: Update player rotation
 
   // Update player line points
   player.linePoints[0] = {(int)player.x - player.width, (int)player.y};
