@@ -1,9 +1,4 @@
-/* main.cpp
- * The entry point for the program.
- */
-
 #include <iostream>
-// #include <stdlib.h>
 #include <SDL2/SDL.h>
 
 // Structs/Classes
@@ -59,7 +54,7 @@ bool initialiseWindow(void)
     std::cout << "SDL could not initialise! SDL_Error: " << SDL_GetError() << std::endl;
     return false;
   }
-  window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
   if (!window)
   {
