@@ -197,11 +197,11 @@ void updateGame(void)
   }
   else if (ball.y >= SCREEN_HEIGHT - ball.height)
   {
-    // TODO: ball.is_alive = false;
-    // TODO: player.lives--;
+    player.lives--;
     ball.x = (SCREEN_WIDTH / 2) - (ball.width / 2);       // middle of the screen
     ball.y = (SCREEN_HEIGHT / 2) - (ball.height / 2);     // middle of the screen
     ball.direction = (float)rand() / RAND_MAX * 2 * M_PI; // random direction
+    ball.speed = 100;
   }
 
   // check for ball collision with the player
