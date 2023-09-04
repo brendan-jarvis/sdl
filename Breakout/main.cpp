@@ -18,6 +18,14 @@ public:
   bool is_alive;
 };
 
+class Brick
+{
+public:
+  float x, y;
+  int width = 60, height = 20;
+  bool is_alive = true;
+};
+
 // Constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -29,6 +37,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player player;
 Ball ball;
+Brick bricks[24];
 SDL_Event event;
 
 void setup(void)
@@ -56,6 +65,29 @@ void setup(void)
   ball.is_alive = true;
   ball.speed = 100;
   ball.acceleration = 0;
+
+  // initialise 24 bricks on the screen
+  // TODO: change this pattern of bricks
+  for (int i = 0; i < 24; i++)
+  {
+    bricks[i].x = (SCREEN_WIDTH / 2) - (bricks[i].width * 3) - 10;
+    bricks[i].y = 50;
+    if (i > 5)
+    {
+      bricks[i].x += (bricks[i].width + 10) * (i % 6);
+      bricks[i].y += (bricks[i].height + 10) * 1;
+    }
+    if (i > 11)
+    {
+      bricks[i].x += (bricks[i].width + 10) * (i % 6);
+      bricks[i].y += (bricks[i].height + 10) * 1;
+    }
+    if (i > 17)
+    {
+      bricks[i].x += (bricks[i].width + 10) * (i % 6);
+      bricks[i].y += (bricks[i].height + 10) * 1;
+    }
+  }
 }
 
 bool initialiseWindow(void)
@@ -192,6 +224,16 @@ void renderOutput(void)
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_Rect playerRect = {(int)player.x, (int)player.y, player.width, player.height};
   SDL_Rect ballRect = {(int)ball.x, (int)ball.y, ball.width, ball.height};
+
+  // draw for the bricks
+  for (int i = 0; i < 24; i++)
+  {
+    if (bricks[i].is_alive)
+    {
+      SDL_Rect brickRect = {(int)bricks[i].x, (int)bricks[i].y, bricks[i].width, bricks[i].height};
+      SDL_RenderFillRect(renderer, &brickRect);
+    }
+  }
 
   SDL_RenderFillRect(renderer, &playerRect);
   SDL_RenderFillRect(renderer, &ballRect);
