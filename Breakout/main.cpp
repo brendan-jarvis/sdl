@@ -5,7 +5,7 @@
 class Ball
 {
 public:
-  float x, y;
+  float x, y, direction;
   int width, height, lives, score, speed, acceleration;
   bool is_alive;
 };
@@ -33,24 +33,28 @@ SDL_Event event;
 
 void setup(void)
 {
+  srand(time(nullptr));
+
   // initialise the player
   player.x = (SCREEN_WIDTH / 2) - (player.width / 2); // middle of the screen
   player.y = SCREEN_HEIGHT - 30;                      // bottom of the screen
-  player.width = 30;
+  player.width = 60;
   player.height = 5;
   player.acceleration = 0;
-  player.speed = 100;
+  player.speed = 10;
   player.is_alive = true;
   player.score = 0;
   player.lives = 3;
 
   // initialise the ball
-  ball.x = (SCREEN_WIDTH / 2) - (ball.width / 2);   // middle of the screen
-  ball.y = (SCREEN_HEIGHT / 2) - (ball.height / 2); // middle of the screen
-  ball.width = 5;
-  ball.height = 5;
+  // starting from the player's paddle
+  ball.x = player.x + (player.width / 2) - (ball.width / 2);
+  ball.y = player.y - ball.height;
+  ball.direction = (float)rand() / RAND_MAX * 2 * M_PI; // random direction - only up
+  ball.width = 10;
+  ball.height = 10;
   ball.is_alive = true;
-  ball.speed = 3;
+  ball.speed = 100;
   ball.acceleration = 0;
 }
 
@@ -93,10 +97,10 @@ void processInput(void)
         game_is_running = false;
         break;
       case SDLK_LEFT:
-        player.acceleration = -player.speed;
+        player.x -= player.speed;
         break;
       case SDLK_RIGHT:
-        player.acceleration = player.speed;
+        player.x += player.speed;
         break;
       }
     }
@@ -110,18 +114,58 @@ void updateGame(void)
   last_frame_time = SDL_GetTicks();
 
   // Update player position
-  player.x += player.acceleration * delta_time;
+  player.x += player.speed * player.acceleration * delta_time;
 
-  // TODO: add friction to player acceleration
+  // Update ball position
+  ball.x += ball.speed * cos(ball.direction) * delta_time;
+  ball.y += ball.speed * sin(ball.direction) * delta_time;
 
   // Check for player collision with the edge of the screen
   if (player.x <= 0)
   {
     player.x = 0;
+    player.acceleration = 0;
   }
   else if (player.x >= SCREEN_WIDTH - player.width)
   {
     player.x = SCREEN_WIDTH - player.width;
+    player.acceleration = 0;
+  }
+
+  // Check for ball collision with the edge of the screen
+  if (ball.x <= 0)
+  {
+    ball.x = 0;
+    ball.direction = M_PI - ball.direction;
+  }
+  else if (ball.x >= SCREEN_WIDTH - ball.width)
+  {
+    ball.x = SCREEN_WIDTH - ball.width;
+    ball.direction = M_PI - ball.direction;
+  }
+  else if (ball.y <= 0)
+  {
+    ball.y = 0;
+    ball.direction = -ball.direction;
+  }
+  else if (ball.y >= SCREEN_HEIGHT - ball.height)
+  {
+    // TODO: ball.is_alive = false;
+    // TODO: player.lives--;
+    ball.x = (SCREEN_WIDTH / 2) - (ball.width / 2);       // middle of the screen
+    ball.y = (SCREEN_HEIGHT / 2) - (ball.height / 2);     // middle of the screen
+    ball.direction = (float)rand() / RAND_MAX * 2 * M_PI; // random direction
+  }
+
+  // check for ball collision with the player
+  // prevent the ball overlapping the player
+  if (ball.y + ball.height >= player.y && ball.y <= player.y + player.height)
+  {
+    if (ball.x + ball.width >= player.x && ball.x <= player.x + player.width)
+    {
+      ball.y = player.y - ball.height;
+      ball.direction = -ball.direction;
+    }
   }
 }
 
