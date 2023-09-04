@@ -114,22 +114,14 @@ void updateGame(void)
 
   // TODO: add friction to player acceleration
 
-  // Check for collision with window bounds
+  // Check for player collision with the edge of the screen
   if (player.x <= 0)
   {
     player.x = 0;
   }
-  if (player.x >= SCREEN_WIDTH - player.width)
+  else if (player.x >= SCREEN_WIDTH - player.width)
   {
     player.x = SCREEN_WIDTH - player.width;
-  }
-  if (player.y <= 0)
-  {
-    player.y = 0;
-  }
-  if (player.y >= SCREEN_HEIGHT - player.height)
-  {
-    player.y = SCREEN_HEIGHT - player.height;
   }
 }
 
