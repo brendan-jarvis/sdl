@@ -103,6 +103,9 @@ void processInput(void)
         player.x += player.speed;
         break;
       }
+    case SDLK_r:
+      setup();
+      break;
     }
   }
 }
