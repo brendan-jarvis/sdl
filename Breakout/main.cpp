@@ -102,10 +102,22 @@ void processInput(void)
       case SDLK_RIGHT:
         player.x += player.speed;
         break;
+      case SDLK_w: // Increase ball speed
+        ball.speed += 10;
+        break;
+      case SDLK_UP: // Increase player speed
+        player.speed += 10;
+        break;
+      case SDLK_DOWN: // Decrease player speed
+        player.speed -= 10;
+        break;
+      case SDLK_s: // Decrease ball speed
+        ball.speed -= 10;
+        break;
+      case SDLK_r: // Reset the game
+        setup();
+        break;
       }
-    case SDLK_r:
-      setup();
-      break;
     }
   }
 }
