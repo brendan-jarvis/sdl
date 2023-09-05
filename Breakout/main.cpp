@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 // Structs/Classes
 class Ball
@@ -42,7 +43,6 @@ SDL_Event event;
 
 void setup(void)
 {
-  srand(time(nullptr));
 
   // initialise the player
   player.x = (SCREEN_WIDTH / 2) - (player.width / 2); // middle of the screen
@@ -56,14 +56,13 @@ void setup(void)
   player.lives = 3;
 
   // initialise the ball
-  // starting from the player's paddle
-  ball.x = player.x + (player.width / 2) - (ball.width / 2);
-  ball.y = player.y - ball.height;
-  ball.direction = (float)rand() / RAND_MAX * 2 * M_PI; // random direction - only up
+  ball.x = SCREEN_WIDTH / 2;
+  ball.y = SCREEN_WIDTH / 2;
+  ball.direction = (rand() % 360) * (M_PI / 180);
   ball.width = 10;
   ball.height = 10;
   ball.is_alive = true;
-  ball.speed = 100;
+  ball.speed = 0;
   ball.acceleration = 0;
 
   // initialise 24 bricks on the screen
@@ -162,6 +161,12 @@ void updateGame(void)
 
   // Update player position
   player.x += player.speed * player.acceleration * delta_time;
+
+  // speed up the ball after setup
+  if (ball.speed < 100)
+  {
+    ball.speed += 1;
+  }
 
   // Update ball position
   ball.x += ball.speed * cos(ball.direction) * delta_time;
