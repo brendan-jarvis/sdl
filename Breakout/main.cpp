@@ -40,6 +40,7 @@ Player player;
 Ball ball;
 Brick bricks[24];
 SDL_Event event;
+TTF_Font *font = TTF_OpenFont("assets/fonts/Asteroids.ttf", 24);
 
 void setup(void)
 {
@@ -256,6 +257,15 @@ void renderOutput(void)
       SDL_RenderFillRect(renderer, &brickRect);
     }
   }
+
+  // draw the score and lives
+  SDL_Color color = {255, 255, 255, 255};
+  std::string text = "Score: " + std::to_string(player.score) + " Lives: " + std::to_string(player.lives);
+  SDL_Surface *surface = TTF_RenderText_Solid(font, text.c_str(), color);
+  SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+  SDL_Rect textRect = {(SCREEN_WIDTH / 2) - (text.length() * 5), SCREEN_HEIGHT - 30, text.length() * 10, 30};
+  SDL_QueryTexture(texture, NULL, NULL, &textRect.w, &textRect.h);
+  SDL_RenderCopy(renderer, texture, NULL, &textRect);
 
   SDL_RenderFillRect(renderer, &playerRect);
   SDL_RenderFillRect(renderer, &ballRect);
