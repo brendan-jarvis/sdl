@@ -50,7 +50,7 @@ void setup(void)
   player.width = 60;
   player.height = 5;
   player.acceleration = 0;
-  player.speed = 10;
+  player.speed = 100;
   player.is_alive = true;
   player.score = 0;
   player.lives = 3;
@@ -128,10 +128,10 @@ void processInput(void)
         game_is_running = false;
         break;
       case SDLK_LEFT:
-        player.x -= player.speed;
+        player.acceleration = -player.speed;
         break;
       case SDLK_RIGHT:
-        player.x += player.speed;
+        player.acceleration = player.speed;
         break;
       case SDLK_w: // Increase ball speed
         ball.speed += 10;
@@ -160,7 +160,7 @@ void updateGame(void)
   last_frame_time = SDL_GetTicks();
 
   // Update player position
-  player.x += player.speed * player.acceleration * delta_time;
+  player.x += player.acceleration * delta_time;
 
   // speed up the ball after setup
   if (ball.speed < 100)
