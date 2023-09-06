@@ -40,11 +40,10 @@ Player player;
 Ball ball;
 Brick bricks[24];
 SDL_Event event;
-TTF_Font *font = TTF_OpenFont("assets/fonts/Asteroids.ttf", 24);
+TTF_Font *font;
 
 void setup(void)
 {
-
   // initialise the player
   player.x = (SCREEN_WIDTH / 2) - (player.width / 2); // middle of the screen
   player.y = SCREEN_HEIGHT - 30;                      // bottom of the screen
@@ -108,6 +107,15 @@ bool initialiseWindow(void)
   if (!renderer)
   {
     std::cout << "SDL could not create renderer! SDL_Error: " << SDL_GetError() << std::endl;
+  }
+
+  if (TTF_Init() == -1)
+  {
+    std::cout << "Could not initailize SDL2_ttf, error: " << TTF_GetError() << std::endl;
+  }
+  else
+  {
+    std::cout << "SDL2_ttf system ready to go!" << std::endl;
   }
 
   return true;
@@ -258,14 +266,31 @@ void renderOutput(void)
     }
   }
 
-  // draw the score and lives
-  SDL_Color color = {255, 255, 255, 255};
-  std::string text = "Score: " + std::to_string(player.score) + " Lives: " + std::to_string(player.lives);
-  SDL_Surface *surface = TTF_RenderText_Solid(font, text.c_str(), color);
-  SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-  SDL_Rect textRect = {(SCREEN_WIDTH / 2) - (text.length() * 5), SCREEN_HEIGHT - 30, text.length() * 10, 30};
-  SDL_QueryTexture(texture, NULL, NULL, &textRect.w, &textRect.h);
-  SDL_RenderCopy(renderer, texture, NULL, &textRect);
+  // Create surface to contain text
+  font = TTF_OpenFont("assets/fonts/Asteroids.ttf", 32);
+  SDL_Color color = {255, 255, 255};
+  std::string score = "Score: " + std::to_string(player.score) + "    Lives: " + std::to_string(player.lives);
+  SDL_Surface *text = TTF_RenderText_Solid(font, score.c_str(), color);
+  // SDL_Surface *text = TTF_RenderText_Solid(font, "Hello World!", color);
+  if (!text)
+  {
+    std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
+  }
+  // TODO: debug why TTFError Passed a Null Pointer
+  // Then remove this else statement
+  else
+  {
+    // Create texture
+    SDL_Texture *text_texture;
+
+    text_texture = SDL_CreateTextureFromSurface(renderer, text);
+
+    SDL_Rect dest = {0, 0, text->w, text->h};
+
+    SDL_RenderCopy(renderer, text_texture, NULL, &dest);
+
+    SDL_FreeSurface(text);
+  }
 
   SDL_RenderFillRect(renderer, &playerRect);
   SDL_RenderFillRect(renderer, &ballRect);
@@ -275,6 +300,8 @@ void renderOutput(void)
 
 void destroyWindow(void)
 {
+  TTF_CloseFont(font);
+  TTF_Quit();
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
