@@ -40,7 +40,7 @@ Player player;
 Ball ball;
 Brick bricks[24];
 SDL_Event event;
-TTF_Font *font;
+TTF_Font *font; // TODO: Open the font only once in the initialization function and close it in the cleanup function
 
 void setup(void)
 {
@@ -289,6 +289,7 @@ void renderOutput(void)
 
     SDL_RenderCopy(renderer, text_texture, NULL, &dest);
 
+    SDL_DestroyTexture(text_texture);
     SDL_FreeSurface(text);
   }
 
