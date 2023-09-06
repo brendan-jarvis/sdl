@@ -40,7 +40,7 @@ Player player;
 Ball ball;
 Brick bricks[24];
 SDL_Event event;
-TTF_Font *font; // TODO: Open the font only once in the initialization function and close it in the cleanup function
+TTF_Font *font;
 
 void setup(void)
 {
@@ -116,6 +116,14 @@ bool initialiseWindow(void)
   else
   {
     std::cout << "SDL2_ttf system ready to go!" << std::endl;
+  }
+
+  font = TTF_OpenFont("assets/fonts/Asteroids.ttf", 32);
+
+  if (font == nullptr)
+  {
+    std::cout << "Could not load font" << std::endl;
+    return false;
   }
 
   return true;
@@ -267,30 +275,37 @@ void renderOutput(void)
   }
 
   // Create surface to contain text
-  font = TTF_OpenFont("assets/fonts/Asteroids.ttf", 32);
   SDL_Color color = {255, 255, 255};
   std::string score = "Score: " + std::to_string(player.score) + "    Lives: " + std::to_string(player.lives);
-  SDL_Surface *text = TTF_RenderText_Solid(font, score.c_str(), color);
-  // SDL_Surface *text = TTF_RenderText_Solid(font, "Hello World!", color);
-  if (!text)
+
+  // Check if font is valid
+  if (font != nullptr)
   {
-    std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
-  }
-  // TODO: debug why TTFError Passed a Null Pointer
-  // Then remove this else statement
-  else
-  {
-    // Create texture
-    SDL_Texture *text_texture;
+    SDL_Surface *text = TTF_RenderText_Solid(font, score.c_str(), color);
+    if (!text)
+    {
+      std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
+    }
+    else
+    {
+      // Create texture
+      SDL_Texture *text_texture;
 
-    text_texture = SDL_CreateTextureFromSurface(renderer, text);
+      text_texture = SDL_CreateTextureFromSurface(renderer, text);
 
-    SDL_Rect dest = {0, 0, text->w, text->h};
+      // Get the width and height of the texture
+      int text_width = text->w;
+      int text_height = text->h;
 
-    SDL_RenderCopy(renderer, text_texture, NULL, &dest);
+      // Setup the destination rectangle to be at the position we want
+      SDL_Rect dest = {0, 0, text_width, text_height};
 
-    SDL_DestroyTexture(text_texture);
-    SDL_FreeSurface(text);
+      SDL_RenderCopy(renderer, text_texture, NULL, &dest);
+
+      // Free the surface and texture
+      SDL_FreeSurface(text);
+      SDL_DestroyTexture(text_texture);
+    }
   }
 
   SDL_RenderFillRect(renderer, &playerRect);
