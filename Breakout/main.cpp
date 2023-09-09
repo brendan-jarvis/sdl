@@ -45,7 +45,7 @@ TTF_Font *font;
 void setup(void)
 {
   // initialise the player
-  player.x = (SCREEN_WIDTH / 2) - (player.width / 2); // middle of the screen
+  player.x = (SCREEN_WIDTH / 2.0) - (player.width / 2.0); // middle of the screen
   player.y = SCREEN_HEIGHT - 30;                      // bottom of the screen
   player.width = 60;
   player.height = 5;
@@ -56,8 +56,8 @@ void setup(void)
   player.lives = 3;
 
   // initialise the ball
-  ball.x = SCREEN_WIDTH / 2;
-  ball.y = SCREEN_WIDTH / 2;
+  ball.x = SCREEN_WIDTH / 2.0;
+  ball.y = SCREEN_WIDTH / 2.0;
   ball.direction = (rand() % 360) * (M_PI / 180);
   ball.width = 10;
   ball.height = 10;
@@ -69,7 +69,7 @@ void setup(void)
   // TODO: change this pattern of bricks
   for (int i = 0; i < 24; i++)
   {
-    bricks[i].x = (SCREEN_WIDTH / 2) - (bricks[i].width * 3) - 10;
+    bricks[i].x = (SCREEN_WIDTH / 2.0) - (bricks[i].width * 3.0) - 10.0;
     bricks[i].y = 50;
     if (i > 5)
     {
@@ -220,8 +220,8 @@ void updateGame(void)
   else if (ball.y >= SCREEN_HEIGHT - ball.height)
   {
     player.lives--;
-    ball.x = (SCREEN_WIDTH / 2) - (ball.width / 2);       // middle of the screen
-    ball.y = (SCREEN_HEIGHT / 2) - (ball.height / 2);     // middle of the screen
+    ball.x = (SCREEN_WIDTH / 2.0) - (ball.width / 2.0);       // middle of the screen
+    ball.y = (SCREEN_HEIGHT / 2.0) - (ball.height / 2.0);     // middle of the screen
     ball.direction = (float)rand() / RAND_MAX * 2 * M_PI; // random direction
     ball.speed = 100;
   }
