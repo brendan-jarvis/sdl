@@ -1,9 +1,8 @@
-#include <iostream>
 #include <SDL2/SDL.h>
+#include <iostream>
 
 // Structs/Classes
-class Player
-{
+class Player {
 public:
   float x, y, rotation, acceleration, speed, turnspeed;
   int width, height, lives, score;
@@ -23,8 +22,7 @@ SDL_Renderer *renderer = NULL;
 Player player;
 SDL_Event event;
 
-void setup(void)
-{
+void setup(void) {
   // initialise the star background
 
   // initialise the player
@@ -47,41 +45,38 @@ void setup(void)
   // initialise the asteroids
 }
 
-bool initialiseWindow(void)
-{
-  if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-  {
-    std::cout << "SDL could not initialise! SDL_Error: " << SDL_GetError() << std::endl;
+bool initialiseWindow(void) {
+  if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+    std::cout << "SDL could not initialise! SDL_Error: " << SDL_GetError()
+              << std::endl;
     return false;
   }
-  window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED,
+                            SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+                            SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
-  if (!window)
-  {
-    std::cout << "SDL could not create window! SDL_Error: " << SDL_GetError() << std::endl;
+  if (!window) {
+    std::cout << "SDL could not create window! SDL_Error: " << SDL_GetError()
+              << std::endl;
   }
   renderer = SDL_CreateRenderer(window, -1, 0);
 
-  if (!renderer)
-  {
-    std::cout << "SDL could not create renderer! SDL_Error: " << SDL_GetError() << std::endl;
+  if (!renderer) {
+    std::cout << "SDL could not create renderer! SDL_Error: " << SDL_GetError()
+              << std::endl;
   }
 
   return true;
 }
 
-void processInput(void)
-{
-  while (SDL_PollEvent(&event))
-  {
-    switch (event.type)
-    {
+void processInput(void) {
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
     case SDL_QUIT:
       game_is_running = false;
       break;
     case SDL_KEYDOWN:
-      switch (event.key.keysym.sym)
-      {
+      switch (event.key.keysym.sym) {
       case SDLK_ESCAPE:
         game_is_running = false;
         break;
@@ -102,8 +97,7 @@ void processInput(void)
   }
 }
 
-void updateGame(void)
-{
+void updateGame(void) {
   float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
 
   last_frame_time = SDL_GetTicks();
@@ -123,26 +117,21 @@ void updateGame(void)
   // TODO: add friction to player acceleration
 
   // Check for collision with window bounds
-  if (player.x <= 0)
-  {
+  if (player.x <= 0) {
     player.x = 0;
   }
-  if (player.x >= SCREEN_WIDTH - player.width)
-  {
+  if (player.x >= SCREEN_WIDTH - player.width) {
     player.x = SCREEN_WIDTH - player.width;
   }
-  if (player.y <= 0)
-  {
+  if (player.y <= 0) {
     player.y = 0;
   }
-  if (player.y >= SCREEN_HEIGHT - player.height)
-  {
+  if (player.y >= SCREEN_HEIGHT - player.height) {
     player.y = SCREEN_HEIGHT - player.height;
   }
 }
 
-void renderOutput(void)
-{
+void renderOutput(void) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
@@ -155,21 +144,18 @@ void renderOutput(void)
   SDL_RenderPresent(renderer);
 }
 
-void destroyWindow(void)
-{
+void destroyWindow(void) {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
 }
 
-int main(void)
-{
+int main(void) {
   game_is_running = initialiseWindow();
 
   setup();
 
-  while (game_is_running)
-  {
+  while (game_is_running) {
     processInput();
     updateGame();
     renderOutput();
