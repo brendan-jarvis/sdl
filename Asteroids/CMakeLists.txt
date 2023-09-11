@@ -1,30 +1,86 @@
-cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_STANDARD 17)
+cmake_minimum_required(VERSION 3.13.1)
+
+Message("")
+Message( STATUS "CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR} )
+Message( STATUS "CMAKE_SOURCE_DIR: " ${CMAKE_SOURCE_DIR} )
+Message( STATUS "CMAKE_COMMAND: " ${CMAKE_COMMAND} )
+Message( STATUS "CMAKE_VERSION: " ${CMAKE_VERSION} )
+Message( STATUS "CMAKE_C_COMPILER: " ${CMAKE_C_COMPILER} )
+Message( STATUS "CMAKE_PROJECT_NAME: " ${CMAKE_PROJECT_NAME} )
+Message( STATUS "CMAKE_FINDCMAKE: " ${CMAKE_SOURCE_DIR}/CMAKE )
 
 project(Asteroids)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+# ------- Set Vars ------- #
 
-find_package(SDL2 REQUIRED)
-# find_package(SDL2_ttf REQUIRED)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMAKE")
+set(SOURCE_FILES    src/main.cpp)
 
-include_directories(${SDL2_INCLUDE_DIRS})
-# include_directories(${SDL2_TTF_INCLUDE_DIRS})
+Message("")
+Message( STATUS "SOURCE entry point : " ${SOURCE_FILES} )
+Message("")
 
-include_directories("include")
+# ------- End Set Vars --- #
 
-file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+# ------- Executable ----- #
 
-# List your source files explicitly or using wildcards
-file(GLOB SOURCES "src/*.cpp")
+ADD_EXECUTABLE(Asteroids ${SOURCE_FILES})
 
-# Make sure there are source files to compile
-if(SOURCES)
-    add_executable(Asteroids ${SOURCES})
-else()
-    message(FATAL_ERROR "No source files found. Please add your source files to the 'src' directory.")
-endif()
+# ------- End Executable - #
 
-# Remove any leading or trailing whitespace from SDL2_LIBRARIES
-string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
-target_link_libraries(Asteroids ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+# ------- Finds ---------- #
+
+FIND_PACKAGE(SDL2 REQUIRED)
+Message("")
+Message( STATUS "FINDING SDL2" )
+IF (${SDL2_FOUND})
+    Message( STATUS "SDL2_FOUND: " ${SDL2_FOUND})
+    Message( STATUS "SDL2_INCLUDE_DIR:" ${SDL2_INCLUDE_DIR})
+    Message( STATUS "SDL2_LIBRARY: " ${SDL2_LIBRARY})
+ELSE()
+    Message( STATUS "SDL2_FOUND: " ${SDL2_FOUND})
+    Message( FATAL_ERROR "SDL2 NOT FOUND" )
+ENDIF()
+
+FIND_PACKAGE(SDL2_IMAGE)
+Message("")
+Message( STATUS "FINDING SDL2_IMAGE" )
+Message( STATUS "SDL2_IMAGE_FOUND: " ${SDL2_IMAGE_FOUND})
+IF (${SDL2_IMAGE_FOUND})
+    Message( STATUS "SDL2_IMAGE_INCLUDE_DIR: " ${SDL2_IMAGE_INCLUDE_DIR})
+    Message( STATUS "SDL2_IMAGE_LIBRARY: " ${SDL2_IMAGE_LIBRARY})
+ELSE()
+    Message( FATAL_ERROR "SDL2_IMAGE NOT FOUND" )
+ENDIF()
+
+FIND_PACKAGE(SDL2TTF)
+Message("")
+Message( STATUS "FINDING SDL2TTF" )
+Message( STATUS "SDL2TTF_FOUND: " ${SDL2TTF_FOUND} )
+IF (${SDL2TTF_FOUND})
+    Message( STATUS "SDL2TTF_INCLUDE_DIR: " ${SDL2TTF_INCLUDE_DIR})
+    Message( STATUS "SDL2TTF_LIBRARY: " ${SDL2TTF_LIBRARY})
+ELSE()
+    Message( FATAL_ERROR "SDL2TTF NOT FOUND" )
+ENDIF()
+Message("")
+
+FIND_PACKAGE(SDL2Mixer)
+
+Message( STATUS "FINDING SDL2Mixer" )
+Message( STATUS "SDL2Mixer_FOUND: " ${SDL2Mixer_FOUND} )
+
+Message("")
+
+file(COPY assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+# ------- End Finds ------ #
+
+# ------- Inc & Link ---- #
+
+INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2Mixer_INCLUDE_DIR})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2Mixer_LIBRARY} )
+
+# ------- End ----------- #
