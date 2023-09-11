@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <iostream>
 
 // Structs/Classes
@@ -24,7 +25,7 @@ class Brick
 public:
   float x, y;
   int width, height;
-  bool is_alive = true;
+  bool is_alive;
 };
 
 // Constants
@@ -67,28 +68,16 @@ void setup(void)
   ball.acceleration = 0;
 
   // initialise 24 bricks on the screen
-  // TODO: change this pattern of bricks
   for (int i = 0; i < 24; i++)
   {
     bricks[i].width = 60;
     bricks[i].height = 20;
-    bricks[i].x = (SCREEN_WIDTH / 2.0) - (bricks[i].width * 3.0) - 10.0;
-    bricks[i].y = 50;
-    if (i > 5)
-    {
-      bricks[i].x += (bricks[i].width + 10) * (i % 6);
-      bricks[i].y += (bricks[i].height + 10) * 1;
-    }
-    if (i > 11)
-    {
-      bricks[i].x += (bricks[i].width + 10) * (i % 6);
-      bricks[i].y += (bricks[i].height + 10) * 1;
-    }
-    if (i > 17)
-    {
-      bricks[i].x += (bricks[i].width + 10) * (i % 6);
-      bricks[i].y += (bricks[i].height + 10) * 1;
-    }
+
+    // TODO: change this pattern of bricks
+    // 6 bricks per row, 4 rows
+    bricks[i].x = (i % 6) * (bricks[i].width + 5);
+    bricks[i].y = (i / 6.0) * (bricks[i].height + 5);
+    bricks[i].is_alive = true;
   }
 }
 
