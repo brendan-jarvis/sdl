@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 5.13.1)
+cmake_minimum_required(VERSION 3.27)
 
 Message("")
 Message( STATUS "CMAKE_BINARY_DIR: " ${CMAKE_BINARY_DIR} )
