@@ -43,6 +43,27 @@ Brick bricks[24];
 SDL_Event event;
 TTF_Font *font;
 
+int getRandomNumber(int min, int max)
+{
+  return rand() % (max - min + 1) + min;
+}
+
+void drawBricks(Brick bricks[]) 
+{
+  int minX = 50;
+  int minY = SCREEN_HEIGHT / 4.0;
+  for (int i = 0; i < 24; i++)
+  {
+    bricks[i].x = minX + (i % 8) * 70;
+    bricks[i].y = minY + (i / 8.0) * 30;
+    bricks[i].width = 50;
+    bricks[i].height = 20;
+    bricks[i].is_alive = true;
+  }
+}
+
+
+
 void setup(void)
 {
   // initialise the player
@@ -67,18 +88,8 @@ void setup(void)
   ball.speed = 0;
   ball.acceleration = 0;
 
-  // initialise 24 bricks on the screen
-  for (int i = 0; i < 24; i++)
-  {
-    bricks[i].width = 60;
-    bricks[i].height = 20;
-
-    // TODO: change this pattern of bricks
-    // 6 bricks per row, 4 rows
-    bricks[i].x = (i % 6) * (bricks[i].width + 5);
-    bricks[i].y = (i / 6.0) * (bricks[i].height + 5);
-    bricks[i].is_alive = true;
-  }
+  // initialise bricks on the screen
+  drawBricks(bricks);
 }
 
 bool initialiseWindow(void)
