@@ -17,11 +17,6 @@ Brick bricks[24];
 SDL_Event event;
 TTF_Font *font;
 
-int getRandomNumber(int min, int max)
-{
-  return rand() % (max - min + 1) + min;
-}
-
 void drawBricks(Brick bricks[])
 {
   int minX = 50;
