@@ -4,31 +4,7 @@
 #include <iostream>
 
 #include "constants.h"
-
-// Structs/Classes
-class Ball
-{
-public:
-  float x, y, direction;
-  int width, height, lives, score, speed, acceleration;
-  bool is_alive;
-};
-
-class Player
-{
-public:
-  float x, y;
-  int width, height, lives, score, speed, acceleration;
-  bool is_alive;
-};
-
-class Brick
-{
-public:
-  float x, y;
-  int width, height;
-  bool is_alive;
-};
+#include "classes.h"
 
 // Globals
 int game_is_running = false;
