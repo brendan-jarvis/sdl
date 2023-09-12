@@ -46,7 +46,7 @@ int getRandomNumber(int min, int max)
   return rand() % (max - min + 1) + min;
 }
 
-void drawBricks(Brick bricks[]) 
+void drawBricks(Brick bricks[])
 {
   int minX = 50;
   int minY = SCREEN_HEIGHT / 4.0;
@@ -59,8 +59,6 @@ void drawBricks(Brick bricks[])
     bricks[i].is_alive = true;
   }
 }
-
-
 
 void setup(void)
 {
