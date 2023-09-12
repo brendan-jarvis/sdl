@@ -3,6 +3,8 @@
 #include <SDL_mixer.h>
 #include <iostream>
 
+#include "constants.h"
+
 // Structs/Classes
 class Ball
 {
@@ -27,10 +29,6 @@ public:
   int width, height;
   bool is_alive;
 };
-
-// Constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
 
 // Globals
 int game_is_running = false;
