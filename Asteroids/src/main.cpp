@@ -32,13 +32,6 @@ SDL_Event event;
 TTF_Font *font = nullptr;
 
 void setup(void) {
-  for (int i = 0; i < 100; i++) {
-    stars[i].x = rand() % SCREEN_WIDTH;
-    stars[i].y = rand() % SCREEN_HEIGHT;
-    stars[i].brightness =
-        rand() % 50 + 100; // Sets brightness to random value from 100 to 150
-  }
-
   // initialise the player
   player.centerX = SCREEN_WIDTH / 2.0;
   player.centerY = SCREEN_HEIGHT / 2.0;
@@ -90,6 +83,14 @@ bool initialiseWindow(void) {
     return false;
   }
 
+  // Initialise stars - runs only once
+  for (int i = 0; i < 100; i++) {
+    stars[i].x = rand() % SCREEN_WIDTH;
+    stars[i].y = rand() % SCREEN_HEIGHT;
+    stars[i].brightness =
+        rand() % 50 + 100; // Sets brightness to random value from 100 to 150
+  }
+
   return true;
 }
 
@@ -103,6 +104,9 @@ void processInput(void) {
       switch (event.key.keysym.sym) {
       case SDLK_ESCAPE:
         game_is_running = false;
+        break;
+      case SDLK_r:
+        setup();
         break;
       case SDLK_UP:
         player.acceleration += player.speed;
