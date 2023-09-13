@@ -5,6 +5,7 @@
 
 #include "constants.h"
 #include "classes.h"
+#include "patterns.h"
 
 // Globals
 int game_is_running = false;
@@ -35,7 +36,7 @@ void setup(void)
 {
   // initialise the player
   player.x =
-      (SCREEN_WIDTH / 2.0) - (player.width / 2.0); // middle of the screen
+    (SCREEN_WIDTH / 2.0) - (player.width / 2.0); // middle of the screen
   player.y = SCREEN_HEIGHT - 30;                   // bottom of the screen
   player.width = 60;
   player.height = 5;
@@ -56,7 +57,15 @@ void setup(void)
   ball.acceleration = 0;
 
   // initialise bricks on the screen
-  drawBricks(bricks);
+  //drawBricks(bricks);
+  int brickWidth = 20;
+  int brickHeight = 20;
+  int centerX = SCREEN_WIDTH / 2.0;
+  int centerY = SCREEN_HEIGHT / 2.0 - 50; 
+  int offset = 50;  
+  int spacing = 20;   
+  int arms = 4;
+  archimedesSpiralBricks(bricks, 24, brickWidth, brickHeight, centerX, centerY, offset, spacing, arms); 
 }
 
 bool initialiseWindow(void)
@@ -64,7 +73,7 @@ bool initialiseWindow(void)
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
   {
     std::cout << "SDL could not initialise! SDL_Error: " << SDL_GetError()
-              << std::endl;
+      << std::endl;
     return false;
   }
   window = SDL_CreateWindow("Breakout", SDL_WINDOWPOS_UNDEFINED,
@@ -74,23 +83,23 @@ bool initialiseWindow(void)
   if (!window)
   {
     std::cout << "SDL could not create window! SDL_Error: " << SDL_GetError()
-              << std::endl;
+      << std::endl;
   }
   renderer = SDL_CreateRenderer(window, -1, 0);
 
   if (!renderer)
   {
     std::cout << "SDL could not create renderer! SDL_Error: " << SDL_GetError()
-              << std::endl;
+      << std::endl;
   }
 
   if (TTF_Init() == -1)
   {
     std::cout << "Could not initailize SDL2_ttf, error: " << TTF_GetError()
-              << std::endl;
+      << std::endl;
   }
   else
-  {
+{
     std::cout << "SDL2_ttf system ready to go!" << std::endl;
   }
 
@@ -111,37 +120,37 @@ void processInput(void)
   {
     switch (event.type)
     {
-    case SDL_QUIT:
-      game_is_running = false;
-      break;
-    case SDL_KEYDOWN:
-      switch (event.key.keysym.sym)
-      {
-      case SDLK_ESCAPE:
+      case SDL_QUIT:
         game_is_running = false;
         break;
-      case SDLK_LEFT:
-        player.acceleration = -player.speed;
-        break;
-      case SDLK_RIGHT:
-        player.acceleration = player.speed;
-        break;
-      case SDLK_w: // Increase ball speed
-        ball.speed += 10;
-        break;
-      case SDLK_UP: // Increase player speed
-        player.speed += 10;
-        break;
-      case SDLK_DOWN: // Decrease player speed
-        player.speed -= 10;
-        break;
-      case SDLK_s: // Decrease ball speed
-        ball.speed -= 10;
-        break;
-      case SDLK_r: // Reset the game
-        setup();
-        break;
-      }
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.sym)
+        {
+          case SDLK_ESCAPE:
+            game_is_running = false;
+            break;
+          case SDLK_LEFT:
+            player.acceleration = -player.speed;
+            break;
+          case SDLK_RIGHT:
+            player.acceleration = player.speed;
+            break;
+          case SDLK_w: // Increase ball speed
+            ball.speed += 10;
+            break;
+          case SDLK_UP: // Increase player speed
+            player.speed += 10;
+            break;
+          case SDLK_DOWN: // Decrease player speed
+            player.speed -= 10;
+            break;
+          case SDLK_s: // Decrease ball speed
+            ball.speed -= 10;
+            break;
+          case SDLK_r: // Reset the game
+            setup();
+            break;
+        }
     }
   }
 }
@@ -198,7 +207,7 @@ void updateGame(void)
     player.lives--;
     ball.x = (SCREEN_WIDTH / 2.0) - (ball.width / 2.0); // middle of the screen
     ball.y =
-        (SCREEN_HEIGHT / 2.0) - (ball.height / 2.0);      // middle of the screen
+      (SCREEN_HEIGHT / 2.0) - (ball.height / 2.0);      // middle of the screen
     ball.direction = (float)rand() / RAND_MAX * 2 * M_PI; // random direction
     ball.speed = 100;
   }
@@ -220,10 +229,10 @@ void updateGame(void)
     if (bricks[i].is_alive)
     {
       if (ball.y + ball.height >= bricks[i].y &&
-          ball.y <= bricks[i].y + bricks[i].height)
+        ball.y <= bricks[i].y + bricks[i].height)
       {
         if (ball.x + ball.width >= bricks[i].x &&
-            ball.x <= bricks[i].x + bricks[i].width)
+          ball.x <= bricks[i].x + bricks[i].width)
         {
           bricks[i].is_alive = false;
           ball.direction = -ball.direction;
@@ -241,7 +250,7 @@ void renderOutput(void)
 
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_Rect playerRect = {(int)player.x, (int)player.y, player.width,
-                         player.height};
+    player.height};
   SDL_Rect ballRect = {(int)ball.x, (int)ball.y, ball.width, ball.height};
 
   // draw for the bricks
@@ -250,7 +259,7 @@ void renderOutput(void)
     if (bricks[i].is_alive)
     {
       SDL_Rect brickRect = {(int)bricks[i].x, (int)bricks[i].y, bricks[i].width,
-                            bricks[i].height};
+        bricks[i].height};
       SDL_RenderFillRect(renderer, &brickRect);
     }
   }
@@ -258,7 +267,7 @@ void renderOutput(void)
   // Create surface to contain text
   SDL_Color color = {255, 255, 255};
   std::string score = "Score: " + std::to_string(player.score) +
-                      "    Lives: " + std::to_string(player.lives);
+    "    Lives: " + std::to_string(player.lives);
 
   // Check if font is valid
   if (font != nullptr)
@@ -269,7 +278,7 @@ void renderOutput(void)
       std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
     }
     else
-    {
+  {
       // Create texture
       SDL_Texture *text_texture;
 
