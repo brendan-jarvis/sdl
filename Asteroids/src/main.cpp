@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL_ttf.h>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 #include "SDL2/SDL_render.h"
 #include "constants.h"
@@ -29,6 +29,7 @@ SDL_Renderer *renderer = NULL;
 Player player;
 Star stars[100];
 SDL_Event event;
+TTF_Font *font = nullptr;
 
 void setup(void) {
   for (int i = 0; i < 100; i++) {
@@ -46,7 +47,7 @@ void setup(void) {
   player.rotation = 0;
   player.acceleration = 0;
   player.speed = 3;
-  player.turnspeed = 1;
+  player.turnspeed = 10;
   player.is_alive = true;
   player.score = 0;
   player.lives = 3;
@@ -60,7 +61,7 @@ bool initialiseWindow(void) {
               << std::endl;
     return false;
   }
-  window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED,
+  window = SDL_CreateWindow("Breakout", SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
                             SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
@@ -73,6 +74,20 @@ bool initialiseWindow(void) {
   if (!renderer) {
     std::cout << "SDL could not create renderer! SDL_Error: " << SDL_GetError()
               << std::endl;
+  }
+
+  if (TTF_Init() == -1) {
+    std::cout << "Could not initailize SDL2_ttf, error: " << TTF_GetError()
+              << std::endl;
+  } else {
+    std::cout << "SDL2_ttf system ready to go!" << std::endl;
+  }
+
+  font = TTF_OpenFont("assets/fonts/Asteroids.ttf", 32);
+
+  if (font == nullptr) {
+    std::cout << "Could not load font" << std::endl;
+    return false;
   }
 
   return true;
@@ -129,15 +144,15 @@ void updateGame(void) {
   player.radius = player.width / 2.0;
   player.linePoints[0].x = player.centerX - player.radius * cos(player.angle);
   player.linePoints[0].y = player.centerY + player.radius * sin(player.angle);
-  player.linePoints[1].x = player.centerX;
-  player.linePoints[1].y = player.centerY - player.height / 2.0;
+  player.linePoints[1].x = player.centerX + player.radius * sin(player.angle);
+  player.linePoints[1].y = player.centerY - player.radius * cos(player.angle);
   player.linePoints[2].x = player.centerX + player.radius * cos(player.angle);
   player.linePoints[2].y = player.centerY + player.radius * sin(player.angle);
   player.linePoints[3].x = player.centerX - player.radius * cos(player.angle);
   player.linePoints[3].y = player.centerY + player.radius * sin(player.angle);
 
   // TODO: Check friction applied to player acceleration
-  player.acceleration *= 0.99;
+  // player.acceleration *= 0.99;
 
   // Check for collision with window bounds
   if (player.centerX - player.width / 2.0 <= 0) {
@@ -167,8 +182,39 @@ void renderOutput(void) {
   // TODO: triangular player ship
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, player.linePoints, 4);
-  // SDL_Point points[4] = {{310, 240}, {320, 220}, {330, 240}, {310, 240}};
-  // SDL_RenderDrawLines(renderer, points, 4);
+
+  // Create surface to contain text
+  SDL_Color color = {255, 255, 255};
+  std::string score = "Score: " + std::to_string(player.score) +
+                      "    Lives: " + std::to_string(player.lives) +
+                      "    Rotation: " + std::to_string(player.rotation) +
+                      "    Angle: " + std::to_string(player.angle);
+
+  // Check if font is valid
+  if (font != nullptr) {
+    SDL_Surface *text = TTF_RenderText_Solid(font, score.c_str(), color);
+    if (!text) {
+      std::cout << "Failed to render text: " << TTF_GetError() << std::endl;
+    } else {
+      // Create texture
+      SDL_Texture *text_texture;
+
+      text_texture = SDL_CreateTextureFromSurface(renderer, text);
+
+      // Get the width and height of the texture
+      int text_width = text->w;
+      int text_height = text->h;
+
+      // Setup the destination rectangle to be at the position we want
+      SDL_Rect dest = {10, 5, text_width, text_height};
+
+      SDL_RenderCopy(renderer, text_texture, NULL, &dest);
+
+      // Free the surface and texture
+      SDL_FreeSurface(text);
+      SDL_DestroyTexture(text_texture);
+    }
+  }
 
   SDL_RenderPresent(renderer);
 }
