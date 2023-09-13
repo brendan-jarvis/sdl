@@ -33,14 +33,14 @@ void setup(void) {
   for (int i = 0; i < 100; i++) {
     stars[i].x = rand() % SCREEN_WIDTH;
     stars[i].y = rand() % SCREEN_HEIGHT;
-    stars[i].brightness = rand() % 50 + 100;
+    stars[i].brightness = rand() % 50 + 100; // Sets brightness to random value from 100 to 150
   }
 
   // initialise the player
   player.centerX = SCREEN_WIDTH / 2.0;
   player.centerY = SCREEN_HEIGHT / 2.0;
-  player.width = 5;
-  player.height = 10;
+  player.width = 20;
+  player.height = 20;
   player.rotation = 0;
   player.acceleration = 0;
   player.speed = 3;
@@ -122,6 +122,14 @@ void updateGame(void) {
   //  }
 
   // TODO: update player drawing points
+  player.linePoints[0].x = player.centerX - player.width / 2.0;
+  player.linePoints[0].y = player.centerY + player.height / 2.0;
+  player.linePoints[1].x = player.centerX;
+  player.linePoints[1].y = player.centerY - player.height / 2.0;
+  player.linePoints[2].x = player.centerX + player.width / 2.0;
+  player.linePoints[2].y = player.centerY + player.height / 2.0;
+  player.linePoints[3].x = player.centerX - player.width / 2.0;
+  player.linePoints[3].y = player.centerY + player.height / 2.0;
 
   // TODO: add friction to player acceleration
 
