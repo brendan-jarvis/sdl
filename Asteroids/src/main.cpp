@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL_ttf.h>
 #include <iostream>
+#include <cmath>
 
 #include "SDL2/SDL_render.h"
 #include "constants.h"
@@ -8,8 +9,8 @@
 // Structs/Classes
 class Player {
 public:
-  float centerX, centerY, rotation, acceleration, speed, turnspeed;
-  int width, height, lives, score;
+  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation;
+  int lives, score, radius, width, height;
   SDL_Point linePoints[4];
   bool is_alive;
 };
@@ -33,7 +34,8 @@ void setup(void) {
   for (int i = 0; i < 100; i++) {
     stars[i].x = rand() % SCREEN_WIDTH;
     stars[i].y = rand() % SCREEN_HEIGHT;
-    stars[i].brightness = rand() % 50 + 100; // Sets brightness to random value from 100 to 150
+    stars[i].brightness =
+        rand() % 50 + 100; // Sets brightness to random value from 100 to 150
   }
 
   // initialise the player
@@ -121,17 +123,21 @@ void updateGame(void) {
   //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) * 25;
   //  }
 
-  // TODO: update player drawing points
-  player.linePoints[0].x = player.centerX - player.width / 2.0;
-  player.linePoints[0].y = player.centerY + player.height / 2.0;
+  // Update player drawing points
+  // TODO: update x and y values based on rotation
+  player.angle = player.rotation * M_PI / 180.0;
+  player.radius = player.width / 2.0;
+  player.linePoints[0].x = player.centerX - player.radius * cos(player.angle);
+  player.linePoints[0].y = player.centerY + player.radius * sin(player.angle);
   player.linePoints[1].x = player.centerX;
   player.linePoints[1].y = player.centerY - player.height / 2.0;
-  player.linePoints[2].x = player.centerX + player.width / 2.0;
-  player.linePoints[2].y = player.centerY + player.height / 2.0;
-  player.linePoints[3].x = player.centerX - player.width / 2.0;
-  player.linePoints[3].y = player.centerY + player.height / 2.0;
+  player.linePoints[2].x = player.centerX + player.radius * cos(player.angle);
+  player.linePoints[2].y = player.centerY + player.radius * sin(player.angle);
+  player.linePoints[3].x = player.centerX - player.radius * cos(player.angle);
+  player.linePoints[3].y = player.centerY + player.radius * sin(player.angle);
 
-  // TODO: add friction to player acceleration
+  // TODO: Check friction applied to player acceleration
+  player.acceleration *= 0.99;
 
   // Check for collision with window bounds
   if (player.centerX - player.width / 2.0 <= 0) {
