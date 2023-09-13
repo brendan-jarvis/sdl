@@ -29,8 +29,8 @@ void setup(void)
   // initialise the star background
 
   // initialise the player
-  player.x = (SCREEN_WIDTH / 2) - (player.width / 2);
-  player.y = (SCREEN_HEIGHT / 2) - (player.height / 2);
+  player.x = (SCREEN_WIDTH / 2.0) - (player.width / 2.0);
+  player.y = (SCREEN_HEIGHT / 2.0) - (player.height / 2.0);
   player.width = 5;
   player.height = 10;
   player.rotation = 0;
