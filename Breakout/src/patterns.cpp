@@ -3,13 +3,6 @@
 
 #include "classes.h"
 
-void archimedesSpiral(int n, int r, int a, int b, int *xArray, int *yArray) {
-  for (int i = 0; i < n; i++) {
-    xArray[i] = r * cos(i) + a;
-    yArray[i] = r * sin(i) + b;
-  }
-}
-
 void archimedesSpiralBricks(Brick *bricks, int n, int brickWidth,
                             int brickHeight, int centerX, int centerY,
                             int offset, int spacing, int numArms) {
