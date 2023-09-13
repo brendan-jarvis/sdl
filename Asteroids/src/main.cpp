@@ -2,6 +2,7 @@
 #include <SDL_ttf.h>
 #include <iostream>
 
+#include "SDL2/SDL_render.h"
 #include "constants.h"
 
 // Structs/Classes
@@ -13,16 +14,27 @@ public:
   bool is_alive;
 };
 
+class Star {
+public:
+  float x, y;
+  int brightness;
+};
+
 // Globals
 int game_is_running = false;
 int last_frame_time = 0;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player player;
+Star stars[100];
 SDL_Event event;
 
 void setup(void) {
-  // TODO: initialise the star background
+  for (int i = 0; i < 100; i++) {
+    stars[i].x = rand() % SCREEN_WIDTH;
+    stars[i].y = rand() % SCREEN_HEIGHT;
+    stars[i].brightness = rand() % 50 + 100;
+  }
 
   // initialise the player
   player.centerX = SCREEN_WIDTH / 2.0;
@@ -101,6 +113,14 @@ void updateGame(void) {
   player.centerX += player.acceleration * delta_time;
   player.centerY += player.acceleration * delta_time;
 
+  // Update star brightness
+  // TODO: make stars twinkle
+
+  //  float time = SDL_GetTicks() / 1000.0f;
+  //  for (int i = 0; i < 100; i++) {
+  //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) * 25;
+  //  }
+
   // TODO: update player drawing points
 
   // TODO: add friction to player acceleration
@@ -123,6 +143,12 @@ void updateGame(void) {
 void renderOutput(void) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
+
+  // Draw stars
+  for (int i = 0; i < 100; i++) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, stars[i].brightness);
+    SDL_RenderDrawPoint(renderer, stars[i].x, stars[i].y);
+  }
 
   // TODO: triangular player ship
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
