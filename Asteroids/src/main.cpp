@@ -12,7 +12,39 @@ public:
   float centerX, centerY, acceleration, speed, turnspeed, angle, rotation;
   int lives, score, radius, width, height;
   SDL_Point linePoints[4];
-  bool is_alive;
+  bool is_alive, isAccelerating;
+
+  void Accelerate(void) { isAccelerating = true; }
+
+  void Decelerate(void) { isAccelerating = false; }
+
+  void RotateLeft(void) { rotation -= turnspeed; }
+
+  void RotateRight(void) { rotation += turnspeed; }
+
+  void Update(float delta_time) {
+    centerX += acceleration * cos(rotation) * delta_time;
+    centerY += acceleration * sin(rotation) * delta_time;
+
+    // Update player drawing points
+    // TODO: update x and y values based on z-axis rotation
+    angle = rotation * M_PI / 180.0;
+    radius = width / 2.0;
+    linePoints[0].x = centerX - radius * cos(angle);
+    linePoints[0].y = centerY + radius * sin(angle);
+    linePoints[1].x = centerX + radius * sin(angle);
+    linePoints[1].y = centerY - radius * cos(angle);
+    linePoints[2].x = centerX + radius * cos(angle);
+    linePoints[2].y = centerY + radius * sin(angle);
+    linePoints[3].x = centerX - radius * cos(angle);
+    linePoints[3].y = centerY + radius * sin(angle);
+
+    if (isAccelerating) {
+      acceleration += speed;
+    } else {
+      acceleration *= 0.997;
+    }
+  }
 };
 
 class Star {
@@ -39,7 +71,7 @@ void setup(void) {
   player.height = 20;
   player.rotation = 0;
   player.acceleration = 0;
-  player.speed = 3;
+  player.speed = 0.5;
   player.turnspeed = 10;
   player.is_alive = true;
   player.score = 0;
@@ -109,16 +141,16 @@ void processInput(void) {
         setup();
         break;
       case SDLK_UP:
-        player.acceleration += player.speed;
+        player.Accelerate();
         break;
       case SDLK_DOWN:
-        player.acceleration -= player.speed;
+        player.Decelerate();
         break;
       case SDLK_LEFT:
-        player.rotation -= player.turnspeed;
+        player.RotateLeft();
         break;
       case SDLK_RIGHT:
-        player.rotation += player.turnspeed;
+        player.RotateRight();
         break;
       }
     }
@@ -130,9 +162,8 @@ void updateGame(void) {
 
   last_frame_time = SDL_GetTicks();
 
-  // Update player position
-  player.centerX += player.acceleration * delta_time;
-  player.centerY += player.acceleration * delta_time;
+  // Update player
+  player.Update(delta_time);
 
   // Update star brightness
   // TODO: make stars twinkle
@@ -141,22 +172,6 @@ void updateGame(void) {
   //  for (int i = 0; i < 100; i++) {
   //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) * 25;
   //  }
-
-  // Update player drawing points
-  // TODO: update x and y values based on rotation
-  player.angle = player.rotation * M_PI / 180.0;
-  player.radius = player.width / 2.0;
-  player.linePoints[0].x = player.centerX - player.radius * cos(player.angle);
-  player.linePoints[0].y = player.centerY + player.radius * sin(player.angle);
-  player.linePoints[1].x = player.centerX + player.radius * sin(player.angle);
-  player.linePoints[1].y = player.centerY - player.radius * cos(player.angle);
-  player.linePoints[2].x = player.centerX + player.radius * cos(player.angle);
-  player.linePoints[2].y = player.centerY + player.radius * sin(player.angle);
-  player.linePoints[3].x = player.centerX - player.radius * cos(player.angle);
-  player.linePoints[3].y = player.centerY + player.radius * sin(player.angle);
-
-  // TODO: Check friction applied to player acceleration
-  // player.acceleration *= 0.99;
 
   // Check for collision with window bounds
   if (player.centerX - player.width / 2.0 <= 0) {
