@@ -63,7 +63,7 @@ void setup(void) {
   int offset = 50;
   int spacing = 20;
   int arms = 4;
-  archimedesSpiralBricks(bricks, brickCount, brickWidth, brickHeight, centerX, centerY,
+  archimedesSpiralPattern(bricks, brickCount, brickWidth, brickHeight, centerX, centerY,
                          offset, spacing, arms);
 }
 
