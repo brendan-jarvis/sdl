@@ -9,7 +9,7 @@
 // Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation;
+  float centerX, centerY, acceleration, speed, turnspeed, angle;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool is_alive, isAccelerating;
@@ -18,26 +18,29 @@ public:
 
   void Decelerate(void) { isAccelerating = false; }
 
-  void RotateLeft(void) { rotation -= turnspeed; }
+  void RotateLeft(void) { angle -= turnspeed; }
 
-  void RotateRight(void) { rotation += turnspeed; }
+  void RotateRight(void) { angle += turnspeed; }
 
   void Update(float delta_time) {
-    centerX += acceleration * cos(rotation) * delta_time;
-    centerY += acceleration * sin(rotation) * delta_time;
+    centerX += acceleration * cos(angle) * delta_time;
+    centerY += acceleration * sin(angle) * delta_time;
 
     // Update player drawing points
     // TODO: update x and y values based on z-axis rotation
-    angle = rotation * M_PI / 180.0;
-    radius = size / 2.0;
-    linePoints[0].x = centerX - radius * cos(angle);
-    linePoints[0].y = centerY + radius * sin(angle);
-    linePoints[1].x = centerX + radius * sin(angle);
-    linePoints[1].y = centerY - radius * cos(angle);
-    linePoints[2].x = centerX + radius * cos(angle);
-    linePoints[2].y = centerY + radius * sin(angle);
-    linePoints[3].x = centerX - radius * cos(angle);
-    linePoints[3].y = centerY + radius * sin(angle);
+    // angle = rotation * M_PI / 180.0;
+    // linePoints[0] is the nose of the ship
+    linePoints[0].x = centerX + radius * cos(angle);
+    linePoints[0].y = centerY - radius * sin(angle);
+    // linePoints[1] is the tip of the left wing
+    linePoints[1].x = centerX - radius * (cos(angle) + sin(angle));
+    linePoints[1].y = centerY + radius * (sin(angle) - cos(angle));
+    // linePoints[2] is the tip of the right wing
+    linePoints[2].x = centerX - radius * (cos(angle) - sin(angle));
+    linePoints[2].y = centerY + radius * (sin(angle) + cos(angle));
+    // linePoints[3] is the nose of the ship
+    linePoints[3].x = linePoints[0].x;
+    linePoints[3].y = linePoints[0].y;
 
     if (isAccelerating) {
       acceleration += speed;
@@ -68,10 +71,11 @@ void setup(void) {
   player.centerX = SCREEN_WIDTH / 2.0;
   player.centerY = SCREEN_HEIGHT / 2.0;
   player.size = 30;
-  player.rotation = 0;
+  player.radius = player.size / 2.0;
+  player.angle = 90 / 180.0 * M_PI; // convert to radians
   player.acceleration = 0;
   player.speed = 0.5;
-  player.turnspeed = 10;
+  player.turnspeed = 1;
   player.is_alive = true;
   player.score = 0;
   player.lives = 3;
@@ -205,7 +209,7 @@ void renderOutput(void) {
   SDL_Color color = {255, 255, 255};
   std::string score = "Score: " + std::to_string(player.score) +
                       "    Lives: " + std::to_string(player.lives) +
-                      "    Rotation: " + std::to_string(player.rotation) +
+                      "    Rotation: " + std::to_string(player.angle) +
                       "    Angle: " + std::to_string(player.angle);
 
   // Check if font is valid
