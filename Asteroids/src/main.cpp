@@ -9,10 +9,24 @@
 // Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle;
+  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool is_alive, isAccelerating;
+
+  void Setup(void) {
+    this->centerX = SCREEN_WIDTH / 2.0;
+    this->centerY = SCREEN_HEIGHT / 2.0;
+    this->size = 30;
+    this->radius = this->size / 2.0;
+    this->angle = 90 / 180.0 * M_PI; // convert to radians
+    this->acceleration = 0;
+    this->speed = 0.5;
+    this->turnspeed = 360; // degrees per second
+    this->is_alive = true;
+    this->score = 0;
+    this->lives = 3;
+  }
 
   void Accelerate(void) { isAccelerating = true; }
 
@@ -30,14 +44,14 @@ public:
     // TODO: update x and y values based on z-axis rotation
     // angle = rotation * M_PI / 180.0;
     // linePoints[0] is the nose of the ship
-    linePoints[0].x = centerX + radius * cos(angle);
-    linePoints[0].y = centerY - radius * sin(angle);
+    linePoints[0].x = centerX + 4.0 / 3.0 * radius * cos(angle);
+    linePoints[0].y = centerY - 4.0 / 3.0 * radius * sin(angle);
     // linePoints[1] is the tip of the left wing
-    linePoints[1].x = centerX - radius * (cos(angle) + sin(angle));
-    linePoints[1].y = centerY + radius * (sin(angle) - cos(angle));
+    linePoints[1].x = centerX - radius * (2.0 / 3.0 * cos(angle) + sin(angle));
+    linePoints[1].y = centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
     // linePoints[2] is the tip of the right wing
-    linePoints[2].x = centerX - radius * (cos(angle) - sin(angle));
-    linePoints[2].y = centerY + radius * (sin(angle) + cos(angle));
+    linePoints[2].x = centerX - radius * (2.0 / 3.0 * cos(angle) - sin(angle));
+    linePoints[2].y = centerY + radius * (2.0 / 3.0 * sin(angle) + cos(angle));
     // linePoints[3] is the nose of the ship
     linePoints[3].x = linePoints[0].x;
     linePoints[3].y = linePoints[0].y;
@@ -67,18 +81,7 @@ SDL_Event event;
 TTF_Font *font = nullptr;
 
 void setup(void) {
-  // initialise the player
-  player.centerX = SCREEN_WIDTH / 2.0;
-  player.centerY = SCREEN_HEIGHT / 2.0;
-  player.size = 30;
-  player.radius = player.size / 2.0;
-  player.angle = 90 / 180.0 * M_PI; // convert to radians
-  player.acceleration = 0;
-  player.speed = 0.5;
-  player.turnspeed = 1;
-  player.is_alive = true;
-  player.score = 0;
-  player.lives = 3;
+  player.Setup(); // Initialise player
 
   // TODO: initialise the asteroids
 }
@@ -201,9 +204,12 @@ void renderOutput(void) {
     SDL_RenderDrawPoint(renderer, stars[i].x, stars[i].y);
   }
 
-  // TODO: triangular player ship
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, player.linePoints, 4);
+
+  // Red dot in center of player
+  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_RenderDrawPoint(renderer, player.centerX, player.centerY);
 
   // Create surface to contain text
   SDL_Color color = {255, 255, 255};
