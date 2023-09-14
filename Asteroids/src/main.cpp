@@ -10,7 +10,7 @@
 class Player {
 public:
   float centerX, centerY, acceleration, speed, turnspeed, angle, rotation;
-  int lives, score, radius, width, height;
+  int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool is_alive, isAccelerating;
 
@@ -29,7 +29,7 @@ public:
     // Update player drawing points
     // TODO: update x and y values based on z-axis rotation
     angle = rotation * M_PI / 180.0;
-    radius = width / 2.0;
+    radius = size / 2.0;
     linePoints[0].x = centerX - radius * cos(angle);
     linePoints[0].y = centerY + radius * sin(angle);
     linePoints[1].x = centerX + radius * sin(angle);
@@ -67,8 +67,7 @@ void setup(void) {
   // initialise the player
   player.centerX = SCREEN_WIDTH / 2.0;
   player.centerY = SCREEN_HEIGHT / 2.0;
-  player.width = 20;
-  player.height = 20;
+  player.size = 30;
   player.rotation = 0;
   player.acceleration = 0;
   player.speed = 0.5;
@@ -174,17 +173,17 @@ void updateGame(void) {
   //  }
 
   // Check for collision with window bounds
-  if (player.centerX - player.width / 2.0 <= 0) {
-    player.centerX = 0 - player.width / 2.0;
+  if (player.centerX - player.size / 2.0 <= 0) {
+    player.centerX = 0 - player.size / 2.0;
   }
-  if (player.centerX + player.width / 2.0 >= SCREEN_WIDTH - player.width) {
-    player.centerX = SCREEN_WIDTH - player.width / 2.0;
+  if (player.centerX + player.size / 2.0 >= SCREEN_WIDTH - player.size) {
+    player.centerX = SCREEN_WIDTH - player.size / 2.0;
   }
-  if (player.centerY - player.height / 2.0 <= 0) {
-    player.centerY = 0 - player.height / 2.0;
+  if (player.centerY - player.size / 2.0 <= 0) {
+    player.centerY = 0 - player.size / 2.0;
   }
-  if (player.centerY >= SCREEN_HEIGHT - player.height) {
-    player.centerY = SCREEN_HEIGHT - player.height / 2.0;
+  if (player.centerY >= SCREEN_HEIGHT - player.size) {
+    player.centerY = SCREEN_HEIGHT - player.size / 2.0;
   }
 }
 
