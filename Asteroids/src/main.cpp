@@ -9,7 +9,7 @@
 // Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation;
+  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation, friction;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool is_alive, isAccelerating;
@@ -20,29 +20,29 @@ public:
     this->size = 30;
     this->radius = this->size / 2.0;
     this->angle = 90 / 180.0 * M_PI; // convert to radians
-    this->acceleration = 0;
-    this->speed = 0.5;
-    this->turnspeed = 360; // degrees per second
+    this->acceleration = 10;
+    this->speed = 0;
+    this->turnspeed = 0.25;
     this->is_alive = true;
     this->score = 0;
     this->lives = 3;
+    this->friction = 0.7;
   }
 
   void Accelerate(void) { isAccelerating = true; }
 
-  void Decelerate(void) { isAccelerating = false; }
+  void StopAccelerating(void) { isAccelerating = false; }
 
-  void RotateLeft(void) { angle -= turnspeed; }
+  void RotateLeft(void) { angle += turnspeed; }
 
-  void RotateRight(void) { angle += turnspeed; }
+  void RotateRight(void) { angle -= turnspeed; }
 
   void Update(float delta_time) {
-    centerX += acceleration * cos(angle) * delta_time;
-    centerY += acceleration * sin(angle) * delta_time;
+    // Update player position based on angle and acceleration
+    centerX += speed * cos(angle) * delta_time;
+    centerY -= speed * sin(angle) * delta_time;
 
     // Update player drawing points
-    // TODO: update x and y values based on z-axis rotation
-    // angle = rotation * M_PI / 180.0;
     // linePoints[0] is the nose of the ship
     linePoints[0].x = centerX + 4.0 / 3.0 * radius * cos(angle);
     linePoints[0].y = centerY - 4.0 / 3.0 * radius * sin(angle);
@@ -57,9 +57,9 @@ public:
     linePoints[3].y = linePoints[0].y;
 
     if (isAccelerating) {
-      acceleration += speed;
+      speed += acceleration * delta_time;
     } else {
-      acceleration *= 0.997;
+      speed *= friction;
     }
   }
 };
@@ -149,14 +149,17 @@ void processInput(void) {
       case SDLK_UP:
         player.Accelerate();
         break;
-      case SDLK_DOWN:
-        player.Decelerate();
-        break;
       case SDLK_LEFT:
         player.RotateLeft();
         break;
       case SDLK_RIGHT:
         player.RotateRight();
+        break;
+      }
+    case SDL_KEYUP:
+      switch (event.key.keysym.sym) {
+      case SDLK_UP:
+        player.StopAccelerating();
         break;
       }
     }
@@ -173,7 +176,6 @@ void updateGame(void) {
 
   // Update star brightness
   // TODO: make stars twinkle
-
   //  float time = SDL_GetTicks() / 1000.0f;
   //  for (int i = 0; i < 100; i++) {
   //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) * 25;
@@ -215,8 +217,8 @@ void renderOutput(void) {
   SDL_Color color = {255, 255, 255};
   std::string score = "Score: " + std::to_string(player.score) +
                       "    Lives: " + std::to_string(player.lives) +
-                      "    Rotation: " + std::to_string(player.angle) +
-                      "    Angle: " + std::to_string(player.angle);
+                      "    Speed: " + std::to_string(player.speed) +
+                      "    Accelerating: " + std::to_string(player.isAccelerating);
 
   // Check if font is valid
   if (font != nullptr) {
