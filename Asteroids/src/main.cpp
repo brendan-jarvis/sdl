@@ -15,12 +15,27 @@ public:
   SDL_Point linePoints[4];
   bool is_alive, isAccelerating;
 
-  void Setup(void) {
+  Player(){
     this->centerX = SCREEN_WIDTH / 2.0;
     this->centerY = SCREEN_HEIGHT / 2.0;
     this->size = 30;
     this->radius = this->size / 2.0;
-    this->angle = 90 / 180.0 * M_PI; // convert to radians
+    this->angle = 45 / 180.0 * M_PI; // convert to radians
+    this->acceleration = 10;
+    this->speed = 0;
+    this->turnspeed = 0.25;
+    this->is_alive = true;
+    this->score = 0;
+    this->lives = 3;
+    this->friction = 0.7;
+  }
+
+  void Reset(void) {
+    this->centerX = SCREEN_WIDTH / 2.0;
+    this->centerY = SCREEN_HEIGHT / 2.0;
+    this->size = 30;
+    this->radius = this->size / 2.0;
+    this->angle = 45 / 180.0 * M_PI; // convert to radians
     this->acceleration = 10;
     this->speed = 0;
     this->turnspeed = 0.25;
@@ -82,7 +97,7 @@ SDL_Event event;
 TTF_Font *font = nullptr;
 
 void setup(void) {
-  player.Setup(); // Initialise player
+  // Player player = Player();
 
   // TODO: initialise the asteroids
 }
@@ -145,7 +160,7 @@ void processInput(void) {
         game_is_running = false;
         break;
       case SDLK_r:
-        setup();
+        player.Reset();
         break;
       case SDLK_UP:
         player.Accelerate();
