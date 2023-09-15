@@ -9,7 +9,8 @@
 // Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation, friction;
+  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation,
+      friction;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool is_alive, isAccelerating;
@@ -215,10 +216,11 @@ void renderOutput(void) {
 
   // Create surface to contain text
   SDL_Color color = {255, 255, 255};
-  std::string score = "Score: " + std::to_string(player.score) +
-                      "    Lives: " + std::to_string(player.lives) +
-                      "    Speed: " + std::to_string(player.speed) +
-                      "    Accelerating: " + std::to_string(player.isAccelerating);
+  std::string score =
+      "Score: " + std::to_string(player.score) +
+      "    Lives: " + std::to_string(player.lives) +
+      "    Speed: " + std::to_string(player.speed) +
+      "    Accelerating: " + std::to_string(player.isAccelerating);
 
   // Check if font is valid
   if (font != nullptr) {
