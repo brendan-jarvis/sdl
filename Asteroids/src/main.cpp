@@ -93,7 +93,7 @@ bool initialiseWindow(void) {
               << std::endl;
     return false;
   }
-  window = SDL_CreateWindow("Breakout", SDL_WINDOWPOS_UNDEFINED,
+  window = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
                             SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
