@@ -191,24 +191,22 @@ void updateGame(void) {
   player.Update(delta_time);
 
   // Update star brightness
-  // TODO: make stars twinkle
+  // FIX: make stars twinkle
   //  float time = SDL_GetTicks() / 1000.0f;
   //  for (int i = 0; i < 100; i++) {
   //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) * 25;
   //  }
 
-  // FIX: Check for collision with window bounds
-  if (player.centerX - player.size / 2.0 <= 0) {
-    player.centerX = 0 - player.size / 2.0;
+  // TODO: Check for collision with window bounds
+  if (player.centerX + player.radius >= SCREEN_WIDTH) {
+    player.centerX = SCREEN_WIDTH - player.radius;
+  } else if (player.centerX - player.radius <= 0) {
+    player.centerX = 0 + player.radius;
   }
-  if (player.centerX + player.size / 2.0 >= SCREEN_WIDTH - player.size) {
-    player.centerX = SCREEN_WIDTH - player.size / 2.0;
-  }
-  if (player.centerY - player.size / 2.0 <= 0) {
-    player.centerY = 0 - player.size / 2.0;
-  }
-  if (player.centerY >= SCREEN_HEIGHT - player.size) {
-    player.centerY = SCREEN_HEIGHT - player.size / 2.0;
+  if (player.centerY + player.radius >= SCREEN_HEIGHT) {
+    player.centerY = SCREEN_HEIGHT - player.radius;
+  } else if (player.centerY - player.radius <= 0) {
+    player.centerY = 0 + player.radius;
   }
 }
 
