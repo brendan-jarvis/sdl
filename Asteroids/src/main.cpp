@@ -9,7 +9,8 @@
 // NOTE: Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle, friction;
+  float centerX, centerY, acceleration, speed, turnspeed, angle, friction,
+      rotation;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool isAlive, isAccelerating;
@@ -17,12 +18,12 @@ public:
   Player() {
     this->centerX = SCREEN_WIDTH / 2.0;
     this->centerY = SCREEN_HEIGHT / 2.0;
-    this->size = 30;
+    this->size = 15;
     this->radius = this->size / 2.0;
     this->angle = 45 / 180.0 * M_PI; // convert to radians
-    this->acceleration = 10;
+    this->acceleration = 1000;
     this->speed = 0;
-    this->turnspeed = 0.25;
+    this->turnspeed = 360 / 180.0 * M_PI;
     this->isAlive = true;
     this->isAccelerating = false;
     this->score = 0;
@@ -33,12 +34,12 @@ public:
   void Reset(void) {
     this->centerX = SCREEN_WIDTH / 2.0;
     this->centerY = SCREEN_HEIGHT / 2.0;
-    this->size = 30;
+    this->size = 15;
     this->radius = this->size / 2.0;
     this->angle = 45 / 180.0 * M_PI; // convert to radians
-    this->acceleration = 10;
+    this->acceleration = 1000;
     this->speed = 0;
-    this->turnspeed = 0.25;
+    this->turnspeed = 360 / 180.0 * M_PI;
     this->isAlive = true;
     this->isAccelerating = false;
     this->score = 0;
@@ -50,13 +51,15 @@ public:
 
   void StopAccelerating(void) { isAccelerating = false; }
 
-  void RotateLeft(void) {
-    angle += turnspeed;
-  } // HACK: doesn't use rotation, directly mutates angle instead
+  void RotateLeft(void) { rotation = turnspeed; }
 
-  void RotateRight(void) { angle -= turnspeed; }
+  void RotateRight(void) { rotation = -turnspeed; }
+
+  void StopRotating(void) { rotation = 0;}
 
   void Update(float delta_time) {
+    // Update player angle with rotation
+    angle += rotation * delta_time;
     // Update player position based on angle and acceleration
     centerX += speed * cos(angle) * delta_time;
     centerY -= speed * sin(angle) * delta_time;
@@ -78,10 +81,9 @@ public:
     // Check if accelerating or not
     // Update the speed
     if (isAccelerating) {
-      // FIX: isAccelerating is always false
       speed += acceleration * delta_time;
     } else {
-      speed *= friction;
+      speed *= friction * delta_time;
     }
   }
 };
@@ -155,6 +157,7 @@ bool initialiseWindow(void) {
 }
 
 void processInput(void) {
+  const Uint8 *state = SDL_GetKeyboardState(NULL);
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
     case SDL_QUIT:
@@ -168,15 +171,6 @@ void processInput(void) {
       case SDLK_r:
         player.Reset();
         break;
-      case SDLK_UP:
-        player.Accelerate();
-        break;
-      case SDLK_LEFT:
-        player.RotateLeft();
-        break;
-      case SDLK_RIGHT:
-        player.RotateRight();
-        break;
       }
       break;
     case SDL_KEYUP:
@@ -184,9 +178,25 @@ void processInput(void) {
       case SDLK_UP:
         player.StopAccelerating();
         break;
+      case SDLK_LEFT:
+        player.StopRotating();
+        break;
+      case SDLK_RIGHT:
+        player.StopRotating();
+        break;
       }
       break;
     }
+  }
+
+  if (state[SDL_SCANCODE_UP]) {
+    player.Accelerate();
+  }
+  if (state[SDL_SCANCODE_LEFT]) {
+    player.RotateLeft();
+  }
+  if (state[SDL_SCANCODE_RIGHT]) {
+    player.RotateRight();
   }
 }
 
@@ -237,11 +247,10 @@ void renderOutput(void) {
 
   // Create surface to contain text
   SDL_Color color = {255, 255, 255};
-  std::string score =
-      "Score: " + std::to_string(player.score) +
-      "    Lives: " + std::to_string(player.lives) +
-      "    Speed: " + std::to_string(player.speed) +
-      "    Accelerating: " + std::to_string(player.isAccelerating);
+  std::string score = "Score: " + std::to_string(player.score) +
+                      "    Lives: " + std::to_string(player.lives) +
+                      "    Rotation: " + std::to_string(player.rotation) +
+                      "    Angle: " + std::to_string(player.angle);
 
   // Check if font is valid
   if (font != nullptr) {
