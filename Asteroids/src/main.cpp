@@ -9,13 +9,12 @@
 // NOTE: Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle,
-      friction;
+  float centerX, centerY, acceleration, speed, turnspeed, angle, friction;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
-  bool is_alive, isAccelerating;
+  bool isAlive, isAccelerating;
 
-  Player(){
+  Player() {
     this->centerX = SCREEN_WIDTH / 2.0;
     this->centerY = SCREEN_HEIGHT / 2.0;
     this->size = 30;
@@ -24,7 +23,8 @@ public:
     this->acceleration = 10;
     this->speed = 0;
     this->turnspeed = 0.25;
-    this->is_alive = true;
+    this->isAlive = true;
+    this->isAccelerating = false;
     this->score = 0;
     this->lives = 3;
     this->friction = 0.7;
@@ -39,7 +39,8 @@ public:
     this->acceleration = 10;
     this->speed = 0;
     this->turnspeed = 0.25;
-    this->is_alive = true;
+    this->isAlive = true;
+    this->isAccelerating = false;
     this->score = 0;
     this->lives = 3;
     this->friction = 0.7;
@@ -49,7 +50,9 @@ public:
 
   void StopAccelerating(void) { isAccelerating = false; }
 
-  void RotateLeft(void) { angle += turnspeed; } // HACK: doesn't use rotation, directly mutates angle instead
+  void RotateLeft(void) {
+    angle += turnspeed;
+  } // HACK: doesn't use rotation, directly mutates angle instead
 
   void RotateRight(void) { angle -= turnspeed; }
 
@@ -72,7 +75,10 @@ public:
     linePoints[3].x = linePoints[0].x;
     linePoints[3].y = linePoints[0].y;
 
+    // Check if accelerating or not
+    // Update the speed
     if (isAccelerating) {
+      // FIX: isAccelerating is always false
       speed += acceleration * delta_time;
     } else {
       speed *= friction;
@@ -172,12 +178,14 @@ void processInput(void) {
         player.RotateRight();
         break;
       }
+      break;
     case SDL_KEYUP:
       switch (event.key.keysym.sym) {
       case SDLK_UP:
         player.StopAccelerating();
         break;
       }
+      break;
     }
   }
 }
