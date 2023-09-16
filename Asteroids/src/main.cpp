@@ -21,7 +21,7 @@ public:
     this->size = 15;
     this->radius = this->size / 2.0;
     this->angle = 45 / 180.0 * M_PI; // convert to radians
-    this->acceleration = 1000;
+    this->acceleration = 50;
     this->speed = 0;
     this->turnspeed = 360 / 180.0 * M_PI;
     this->isAlive = true;
@@ -37,7 +37,7 @@ public:
     this->size = 15;
     this->radius = this->size / 2.0;
     this->angle = 45 / 180.0 * M_PI; // convert to radians
-    this->acceleration = 1000;
+    this->acceleration = 50;
     this->speed = 0;
     this->turnspeed = 360 / 180.0 * M_PI;
     this->isAlive = true;
@@ -84,7 +84,7 @@ public:
     if (isAccelerating) {
       speed += acceleration * delta_time;
     } else {
-      speed *= friction * delta_time;
+      speed *= pow(friction, delta_time);
     }
   }
 };
@@ -213,7 +213,8 @@ void updateGame(void) {
   // FIX: make stars twinkle
   //  float time = SDL_GetTicks() / 1000.0f;
   //  for (int i = 0; i < 100; i++) {
-  //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) * 25;
+  //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) *
+  //    25;
   //  }
 
   // TODO: Check for collision with window bounds
