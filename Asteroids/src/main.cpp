@@ -92,7 +92,12 @@ public:
 class Star {
 public:
   float x, y;
-  int brightness;
+
+  Star() {
+    // random x y coordinates
+    this->x = rand() % SCREEN_WIDTH;
+    this->y = rand() % SCREEN_HEIGHT;
+  }
 };
 
 // NOTE: Globals
@@ -144,14 +149,6 @@ bool initialiseWindow(void) {
   if (font == nullptr) {
     std::cout << "Could not load font" << std::endl;
     return false;
-  }
-
-  // Initialise stars - runs only once
-  for (int i = 0; i < 100; i++) {
-    stars[i].x = rand() % SCREEN_WIDTH;
-    stars[i].y = rand() % SCREEN_HEIGHT;
-    stars[i].brightness =
-        rand() % 50 + 100; // Sets brightness to random value from 100 to 150
   }
 
   return true;
@@ -209,14 +206,6 @@ void updateGame(void) {
   // Update player
   player.Update(delta_time);
 
-  // Update star brightness
-  // FIX: make stars twinkle
-  //  float time = SDL_GetTicks() / 1000.0f;
-  //  for (int i = 0; i < 100; i++) {
-  //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) *
-  //    25;
-  //  }
-
   // TODO: Check for collision with window bounds
   if (player.centerX + player.radius >= SCREEN_WIDTH) {
     player.centerX = SCREEN_WIDTH - player.radius;
@@ -236,7 +225,7 @@ void renderOutput(void) {
 
   // Draw stars
   for (int i = 0; i < 100; i++) {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, stars[i].brightness);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawPoint(renderer, stars[i].x, stars[i].y);
   }
 
@@ -251,8 +240,8 @@ void renderOutput(void) {
   SDL_Color color = {255, 255, 255};
   std::string score = "Score: " + std::to_string(player.score) +
                       "    Lives: " + std::to_string(player.lives) +
-                      "    Rotation: " + std::to_string(player.rotation) +
-                      "    Angle: " + std::to_string(player.angle);
+                      "    Ship: x" + std::to_string((int)player.centerX) +
+                      "  y" + std::to_string((int)player.centerY);
 
   // Check if font is valid
   if (font != nullptr) {
