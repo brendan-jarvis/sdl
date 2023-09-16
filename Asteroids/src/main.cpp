@@ -55,12 +55,13 @@ public:
 
   void RotateRight(void) { rotation = -turnspeed; }
 
-  void StopRotating(void) { rotation = 0;}
+  void StopRotating(void) { rotation = 0; }
 
   void Update(float delta_time) {
     // Update player angle with rotation
     angle += rotation * delta_time;
     // Update player position based on angle and acceleration
+    // FIX: player is moving too fast when accelerating continuously
     centerX += speed * cos(angle) * delta_time;
     centerY -= speed * sin(angle) * delta_time;
 
