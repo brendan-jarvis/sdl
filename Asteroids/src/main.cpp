@@ -6,10 +6,10 @@
 #include "SDL2/SDL_render.h"
 #include "constants.h"
 
-// Structs/Classes
+// NOTE: Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle, rotation,
+  float centerX, centerY, acceleration, speed, turnspeed, angle,
       friction;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
@@ -49,7 +49,7 @@ public:
 
   void StopAccelerating(void) { isAccelerating = false; }
 
-  void RotateLeft(void) { angle += turnspeed; }
+  void RotateLeft(void) { angle += turnspeed; } // HACK: doesn't use rotation, directly mutates angle instead
 
   void RotateRight(void) { angle -= turnspeed; }
 
@@ -86,7 +86,7 @@ public:
   int brightness;
 };
 
-// Globals
+// NOTE: Globals
 int game_is_running = false;
 int last_frame_time = 0;
 SDL_Window *window = NULL;
@@ -197,7 +197,7 @@ void updateGame(void) {
   //    stars[i].brightness = 100 + (sin(time + stars[i].brightness) + 1) * 25;
   //  }
 
-  // Check for collision with window bounds
+  // FIX: Check for collision with window bounds
   if (player.centerX - player.size / 2.0 <= 0) {
     player.centerX = 0 - player.size / 2.0;
   }
