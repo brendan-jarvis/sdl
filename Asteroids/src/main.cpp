@@ -162,6 +162,13 @@ void updateGame(void) {
   // Update player
   player.Update(deltaTime);
 
+  // Update asteroids
+  for (int i = 0; i < 10; i++) {
+    if (asteroids[i].isAlive) {
+      asteroids[i].Update(deltaTime);
+    }
+  }
+
   // Calculate frame rate
   calculateFramerate(deltaTime);
 

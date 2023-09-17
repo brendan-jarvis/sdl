@@ -28,3 +28,21 @@ Asteroid::Asteroid(float playerX, float playerY) {
   // isAlive is true
   isAlive = true;
 }
+
+void Asteroid::Update(float deltaTime){
+  // Move the asteroid
+  centerX += cos(angle * M_PI / 180.0) * speed * deltaTime;
+  centerY += sin(angle * M_PI / 180.0) * speed * deltaTime;
+
+  // Wrap around the screen
+  if (centerX < 0 - size / 2.0) {
+    centerX = SCREEN_WIDTH + size / 2.0;
+  } else if (centerX > SCREEN_WIDTH + size / 2.0) {
+    centerX = 0 - size / 2.0;
+  }
+  if (centerY < 0 - size / 2.0) {
+    centerY = SCREEN_HEIGHT + size / 2.0;
+  } else if (centerY > SCREEN_HEIGHT + size / 2.0) {
+    centerY = 0 - size / 2.0;
+  }
+}

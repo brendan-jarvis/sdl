@@ -5,5 +5,5 @@ public:
   bool isAlive;
 
   Asteroid(float playerX, float playerY);
-  void update(float deltaTime);
+  void Update(float deltaTime);
 };
