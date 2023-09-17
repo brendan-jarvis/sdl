@@ -92,8 +92,11 @@ public:
 };
 
 // NOTE: Globals
-int game_is_running = false;
-int last_frame_time = 0;
+int gameIsRunning = false;
+int lastFrameTime = 0;
+int frameCount = 0;
+float timeCount = 0.0f;
+float frameRate = 0.0f;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player player;
@@ -106,7 +109,8 @@ void setup(void) {
   // Seed random number generator
   srand(time(NULL));
 
-  // Create stars surface
+  // PERF: Create stars surface
+  // Doing this here saves us having to draw the stars every frame
   SDL_Surface *backgroundSurface = NULL;
   backgroundSurface =
       SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
@@ -175,12 +179,12 @@ void processInput(void) {
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
     case SDL_QUIT:
-      game_is_running = false;
+      gameIsRunning = false;
       break;
     case SDL_KEYDOWN:
       switch (event.key.keysym.sym) {
       case SDLK_ESCAPE:
-        game_is_running = false;
+        gameIsRunning = false;
         break;
       case SDLK_r:
         player.Reset();
@@ -214,13 +218,28 @@ void processInput(void) {
   }
 }
 
-void updateGame(void) {
-  float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
+void calculateFramerate(float deltaTime) {
+  frameCount++;
+  timeCount += deltaTime;
 
-  last_frame_time = SDL_GetTicks();
+  if (timeCount >= 1.0f) {              // If more than one second has passed
+    frameRate = frameCount / timeCount; // Calculate the frame rate
+    timeCount -= 1.0f;                  // Subtract one second from time count
+    frameCount = 0;                     // Reset frame count
+  }
+}
+
+void updateGame(void) {
+  float currentTime = SDL_GetTicks();
+  float deltaTime = (currentTime - lastFrameTime) / 1000.0;
+
+  lastFrameTime = currentTime;
 
   // Update player
-  player.Update(delta_time);
+  player.Update(deltaTime);
+
+  // Calculate frame rate
+  calculateFramerate(deltaTime);
 
   // TODO: Check for collision with window bounds
   if (player.centerX + player.radius >= SCREEN_WIDTH) {
@@ -253,8 +272,7 @@ void renderOutput(void) {
   SDL_Color color = {255, 255, 255};
   std::string score = "Score: " + std::to_string(player.score) +
                       "    Lives: " + std::to_string(player.lives) +
-                      "    Ship: x" + std::to_string((int)player.centerX) +
-                      "  y" + std::to_string((int)player.centerY);
+                      "    FPS: " + std::to_string((int)frameRate);
 
   // Check if font is valid
   if (font != nullptr) {
@@ -292,11 +310,11 @@ void destroyWindow(void) {
 }
 
 int main(void) {
-  game_is_running = initialiseWindow();
+  gameIsRunning = initialiseWindow();
 
   setup();
 
-  while (game_is_running) {
+  while (gameIsRunning) {
     processInput();
     updateGame();
     renderOutput();
