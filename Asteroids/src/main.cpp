@@ -5,9 +5,10 @@
 #include <vector>
 
 #include "SDL2/SDL_render.h"
+#include "asteroid.h"
 #include "constants.h"
-#include "star.h"
 #include "player.h"
+#include "star.h"
 
 // NOTE: Globals
 int gameIsRunning = false;
@@ -19,6 +20,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player player;
 Star stars[100];
+std::vector<Asteroid> asteroids;
 SDL_Texture *backgroundTexture = NULL;
 SDL_Event event;
 TTF_Font *font = nullptr;
@@ -52,6 +54,10 @@ void setup(void) {
   SDL_DestroyRenderer(tempRenderer);
 
   // TODO: initialise the asteroids
+  // Push 10 asteroids to the vector
+  for (int i = 0; i < 10; i++) {
+    asteroids.push_back(Asteroid(player.centerX, player.centerY));
+  }
 }
 
 bool initialiseWindow(void) {
@@ -179,6 +185,20 @@ void renderOutput(void) {
   // Draw background texture
   SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
 
+  // Draw the asteroids
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  for (int i = 0; i < 10; i++) {
+    if (asteroids[i].isAlive) {
+      SDL_Rect asteroidRect;
+      asteroidRect.x = asteroids[i].centerX;
+      asteroidRect.y = asteroids[i].centerY;
+      asteroidRect.w = asteroids[i].size;
+      asteroidRect.h = asteroids[i].size;
+      SDL_RenderFillRect(renderer, &asteroidRect);
+    }
+  }
+
+  // Draw the player
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, player.linePoints, 4);
 
