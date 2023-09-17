@@ -98,11 +98,36 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player player;
 Star stars[100];
+SDL_Texture *backgroundTexture = NULL;
 SDL_Event event;
 TTF_Font *font = nullptr;
 
 void setup(void) {
-  // Player player = Player();
+  // Seed random number generator
+  srand(time(NULL));
+
+  // Create stars surface
+  SDL_Surface *backgroundSurface = NULL;
+  backgroundSurface =
+      SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
+
+  // Create a temporary SDL_Renderer to draw on the surface
+  SDL_Renderer *tempRenderer = SDL_CreateSoftwareRenderer(backgroundSurface);
+
+  // Draw stars onto the surface
+  for (int i = 0; i < 100; i++) {
+    SDL_SetRenderDrawColor(tempRenderer, stars[i].colour >> 16,
+                           (stars[i].colour >> 8) & 0xFF,
+                           stars[i].colour & 0xFF, 255);
+    SDL_RenderDrawPoint(tempRenderer, stars[i].x, stars[i].y);
+  }
+
+  // Create texture from surface pixels
+  backgroundTexture = SDL_CreateTextureFromSurface(renderer, backgroundSurface);
+
+  // Free the surface and the temporary renderer as we no longer need them
+  SDL_FreeSurface(backgroundSurface);
+  SDL_DestroyRenderer(tempRenderer);
 
   // TODO: initialise the asteroids
 }
@@ -214,13 +239,8 @@ void renderOutput(void) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  // Draw stars
-  for (int i = 0; i < 100; i++) {
-    SDL_SetRenderDrawColor(renderer, stars[i].colour >> 16,
-                           (stars[i].colour >> 8) & 0xFF,
-                           stars[i].colour & 0xFF, 255);
-    SDL_RenderDrawPoint(renderer, stars[i].x, stars[i].y);
-  }
+  // Draw background texture
+  SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
 
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, player.linePoints, 4);
