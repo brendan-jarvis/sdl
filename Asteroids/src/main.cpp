@@ -6,6 +6,7 @@
 
 #include "SDL2/SDL_render.h"
 #include "constants.h"
+#include "star.h"
 
 // NOTE: Structs/Classes
 class Player {
@@ -88,30 +89,6 @@ public:
       speed *= pow(friction, delta_time);
     }
   }
-};
-
-class Star {
-public:
-  float x, y;
-  int colour;
-  static std::vector<int> starColours;
-
-  Star() {
-    this->x = rand() % SCREEN_WIDTH;
-    this->y = rand() % SCREEN_HEIGHT;
-    this->colour = starColours[rand() % starColours.size()];
-  }
-};
-
-// Initialize static member outside the class
-std::vector<int> Star::starColours = {
-    0xA3FFFF, // Blue-white star
-    0xC6F6FF, // White-star
-    0xFFFCB5, // Yellow-white star
-    0xFFFA69, // Yellow star
-    0xFFD100, // Golden star
-    0xFF1700, // Red star
-    0x810000, // Brown dwarf
 };
 
 // NOTE: Globals
