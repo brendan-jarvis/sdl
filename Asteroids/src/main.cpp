@@ -2,6 +2,7 @@
 #include <SDL_ttf.h>
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 #include "SDL2/SDL_render.h"
 #include "constants.h"
@@ -92,12 +93,25 @@ public:
 class Star {
 public:
   float x, y;
+  int colour;
+  static std::vector<int> starColours;
 
   Star() {
-    // random x y coordinates
     this->x = rand() % SCREEN_WIDTH;
     this->y = rand() % SCREEN_HEIGHT;
+    this->colour = starColours[rand() % starColours.size()];
   }
+};
+
+// Initialize static member outside the class
+std::vector<int> Star::starColours = {
+    0xA3FFFF, // Blue-white star
+    0xC6F6FF, // White-star
+    0xFFFCB5, // Yellow-white star
+    0xFFFA69, // Yellow star
+    0xFFD100, // Golden star
+    0xFF1700, // Red star
+    0x810000, // Brown dwarf
 };
 
 // NOTE: Globals
@@ -225,7 +239,9 @@ void renderOutput(void) {
 
   // Draw stars
   for (int i = 0; i < 100; i++) {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, stars[i].colour >> 16,
+                           (stars[i].colour >> 8) & 0xFF,
+                           stars[i].colour & 0xFF, 255);
     SDL_RenderDrawPoint(renderer, stars[i].x, stars[i].y);
   }
 
