@@ -92,6 +92,8 @@ public:
 };
 
 // NOTE: Globals
+const int targetFPS = 60; // NOTE: -1 = unlimited, otherwise 60 or 30 is ordinary
+const int frameDelay = 1000 / targetFPS;
 int gameIsRunning = false;
 int lastFrameTime = 0;
 int frameCount = 0;
@@ -309,6 +311,14 @@ void destroyWindow(void) {
   SDL_Quit();
 }
 
+int limitFPS(void) {
+  int timeSinceLastFrame = SDL_GetTicks() - lastFrameTime;
+  if (timeSinceLastFrame < frameDelay) {
+    return frameDelay - timeSinceLastFrame;
+  }
+  return 0;
+}
+
 int main(void) {
   gameIsRunning = initialiseWindow();
 
@@ -318,6 +328,10 @@ int main(void) {
     processInput();
     updateGame();
     renderOutput();
+
+    if (limitFPS() > 0) {
+      SDL_Delay(limitFPS());
+    }
   }
 
   destroyWindow();
