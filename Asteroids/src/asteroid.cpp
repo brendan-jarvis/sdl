@@ -22,8 +22,8 @@ Asteroid::Asteroid(float playerX, float playerY) {
   // angle is random between 0 and 360
   angle = rand() % 360;
 
-  // speed is random between 50 and 100
-  speed = rand() % 50 + 50;
+  // speed is random between 25 and 30
+  speed = rand() % 5 + 25;
   
   // isAlive is true
   isAlive = true;
