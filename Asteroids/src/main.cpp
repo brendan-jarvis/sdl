@@ -172,18 +172,6 @@ void updateGame(void) {
 
   // Calculate frame rate
   calculateFramerate(deltaTime);
-
-  // TODO: Check for collision with window bounds
-  if (player.centerX + player.radius >= SCREEN_WIDTH) {
-    player.centerX = SCREEN_WIDTH - player.radius;
-  } else if (player.centerX - player.radius <= 0) {
-    player.centerX = 0 + player.radius;
-  }
-  if (player.centerY + player.radius >= SCREEN_HEIGHT) {
-    player.centerY = SCREEN_HEIGHT - player.radius;
-  } else if (player.centerY - player.radius <= 0) {
-    player.centerY = 0 + player.radius;
-  }
 }
 
 void renderOutput(void) {
@@ -216,10 +204,6 @@ void renderOutput(void) {
   // Draw the player
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, player.linePoints, 4);
-
-  // Red dot in center of player
-  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-  SDL_RenderDrawPoint(renderer, player.centerX, player.centerY);
 
   // Create surface to contain text
   SDL_Color color = {255, 255, 255};

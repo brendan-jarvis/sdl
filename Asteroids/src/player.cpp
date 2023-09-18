@@ -72,5 +72,17 @@ void Player::Update(float delta_time) {
     } else {
       speed *= pow(friction, delta_time);
     }
+
+    // Wrap around the screen
+    if (centerX < 0 - radius) {
+      centerX = SCREEN_WIDTH + radius;
+    } else if (centerX > SCREEN_WIDTH + radius) {
+      centerX = 0 - radius;
+    }
+    if (centerY < 0 - radius) {
+      centerY = SCREEN_HEIGHT + radius;
+    } else if (centerY > SCREEN_HEIGHT + radius) {
+      centerY = 0 - radius;
+    }
 }
 
