@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <cmath>
 #include <iostream>
@@ -193,7 +194,13 @@ void renderOutput(void) {
   SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
 
   // Draw the asteroids
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_Texture *asteroidTexture =
+      IMG_LoadTexture(renderer, "../assets/noun-asteroid-5303658.svg");
+
+  if (!asteroidTexture) {
+    std::cout << "Failed to load texture: " << IMG_GetError() << std::endl;
+  }
+
   for (int i = 0; i < 10; i++) {
     if (asteroids[i].isAlive) {
       SDL_Rect asteroidRect;
@@ -201,10 +208,11 @@ void renderOutput(void) {
       asteroidRect.y = asteroids[i].centerY;
       asteroidRect.w = asteroids[i].size;
       asteroidRect.h = asteroids[i].size;
-      SDL_RenderFillRect(renderer, &asteroidRect);
+
+      SDL_RenderCopy(renderer, asteroidTexture, NULL, &asteroidRect);
     }
   }
-
+  
   // Draw the player
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, player.linePoints, 4);
