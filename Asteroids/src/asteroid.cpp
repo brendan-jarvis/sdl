@@ -20,19 +20,23 @@ Asteroid::Asteroid(float playerX, float playerY) {
   }
 
   // angle is random between 0 and 360
-  angle = rand() % 360;
+  float angle = rand() % 360;
 
   // speed is random between 25 and 30
-  speed = rand() % 5 + 25;
-  
+  float speed = rand() % 5 + 25;
+
+  // Calculate dx dy for the asteroid
+  // This simplifies updating the position
+  dx = speed * cos(angle);
+  dy = speed * sin(angle);
+
   // isAlive is true
   isAlive = true;
 }
 
-void Asteroid::Update(float deltaTime){
-  // Move the asteroid
-  centerX += cos(angle * M_PI / 180.0) * speed * deltaTime;
-  centerY += sin(angle * M_PI / 180.0) * speed * deltaTime;
+void Asteroid::Update(float deltaTime) {
+  centerX += dx * deltaTime;
+  centerY += dy * deltaTime;
 
   // Wrap around the screen
   if (centerX < 0 - size / 2.0) {

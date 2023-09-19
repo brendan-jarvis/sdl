@@ -1,6 +1,6 @@
 class Asteroid {
 public:
-  float centerX, centerY, angle, speed;
+  float centerX, centerY, dx, dy;
   int size;
   bool isAlive;
 
