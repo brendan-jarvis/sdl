@@ -1,5 +1,7 @@
 #include "player.h"
+#include "SDL2/SDL_render.h"
 #include "constants.h"
+#include <vector>
 
 Player::Player() {
   this->centerX = SCREEN_WIDTH / 2.0;
@@ -111,5 +113,39 @@ void Player::Render(SDL_Renderer *renderer) {
     thrusterPoints[3].y =
         centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
     SDL_RenderDrawLines(renderer, thrusterPoints, 4);
+
+    /*TODO: optimise this code to be usable
+    * SDL_Point leftPoint, rightPoint, bottomPoint;
+    * leftPoint.x = centerX - radius * (2.0 / 3.0 * cos(angle) + sin(angle));
+    *  leftPoint.y = centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
+    *  rightPoint.x = centerX - radius * (2.0 / 3.0 * cos(angle) - sin(angle));
+    *  rightPoint.y = centerY + radius * (2.0 / 3.0 * sin(angle) + cos(angle));
+    *  bottomPoint.x = centerX - radius * (5.0 / 3.0 * cos(angle));
+    *  bottomPoint.y = centerY + radius * (5.0 / 3.0 * sin(angle));
+    *  const std::vector<SDL_Vertex> verts = {
+    *      {
+    *          SDL_FPoint{static_cast<float>(leftPoint.x),
+    *                     static_cast<float>(leftPoint.y)},
+    *          SDL_Color{255, 255, 255, 255},
+    *          SDL_FPoint{0.0},
+    *      },
+    *      {
+    *          SDL_FPoint{static_cast<float>(rightPoint.x),
+    *                     static_cast<float>(rightPoint.y)},
+    *          SDL_Color{255, 165, 0, 255},
+    *          SDL_FPoint{0.0},
+    *      },
+    *      {
+    *          SDL_FPoint{static_cast<float>(bottomPoint.x),
+    *                     static_cast<float>(bottomPoint.y)},
+    *          SDL_Color{255, 255, 255, 255},
+    *          SDL_FPoint{0.0},
+    *      },
+    *  };
+    *
+    *  SDL_RenderGeometry(renderer, nullptr, verts.data(), verts.size(), nullptr,
+    *                     0);
+    *  SDL_RenderPresent(renderer);
+    */
   }
 }
