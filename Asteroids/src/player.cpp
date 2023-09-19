@@ -8,7 +8,6 @@ Player::Player() {
   this->radius = this->size / 2.0;
   this->angle = 45 / 180.0 * M_PI; // convert to radians
   this->acceleration = 50;
-  this->speed = 0;
   this->turnspeed = 360 / 180.0 * M_PI;
   this->isAlive = true;
   this->isAccelerating = false;
@@ -24,7 +23,6 @@ void Player::Reset(void) {
   this->radius = this->size / 2.0;
   this->angle = 45 / 180.0 * M_PI; // convert to radians
   this->acceleration = 100;
-  this->speed = 0;
   this->turnspeed = 360 / 180.0 * M_PI;
   this->isAlive = true;
   this->isAccelerating = false;

@@ -1,10 +1,9 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-// NOTE: Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, acceleration_X, acceleration_Y, speed,
+  float centerX, centerY, acceleration, acceleration_X, acceleration_Y,
       turnspeed, angle, friction, rotation;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
