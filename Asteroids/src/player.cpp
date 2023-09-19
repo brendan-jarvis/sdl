@@ -26,6 +26,8 @@ void Player::Reset(void) {
   this->turnspeed = 360 / 180.0 * M_PI;
   this->isAlive = true;
   this->isAccelerating = false;
+  this->acceleration_X = 0;
+  this->acceleration_Y = 0;
   this->score = 0;
   this->lives = 3;
   this->friction = 0.7;
