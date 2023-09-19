@@ -17,4 +17,5 @@ public:
   void RotateRight(void);
   void StopRotating(void);
   void Update(float delta_time);
+  void Render(SDL_Renderer *renderer);
 };

@@ -54,7 +54,6 @@ void setup(void) {
   SDL_FreeSurface(backgroundSurface);
   SDL_DestroyRenderer(tempRenderer);
 
-  // TODO: initialise the asteroids
   // Push 10 asteroids to the vector
   for (int i = 0; i < 10; i++) {
     asteroids.push_back(Asteroid(player.centerX, player.centerY));
@@ -200,10 +199,9 @@ void renderOutput(void) {
       SDL_RenderCopy(renderer, asteroidTexture, NULL, &asteroidRect);
     }
   }
-  
+
   // Draw the player
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-  SDL_RenderDrawLines(renderer, player.linePoints, 4);
+  player.Render(renderer);
 
   // Create surface to contain text
   SDL_Color color = {255, 255, 255};

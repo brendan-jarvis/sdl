@@ -88,3 +88,28 @@ void Player::Update(float delta_time) {
     centerY = 0 - radius;
   }
 }
+
+void Player::Render(SDL_Renderer *renderer) {
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_RenderDrawLines(renderer, linePoints, 4);
+  // If player.isAccelerating is true, draw the thruster
+  if (isAccelerating) {
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_Point thrusterPoints[4];
+    thrusterPoints[0].x =
+        centerX - radius * (2.0 / 3.0 * cos(angle) + sin(angle));
+    thrusterPoints[0].y =
+        centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
+    thrusterPoints[1].x =
+        centerX - radius * (2.0 / 3.0 * cos(angle) - sin(angle));
+    thrusterPoints[1].y =
+        centerY + radius * (2.0 / 3.0 * sin(angle) + cos(angle));
+    thrusterPoints[2].x = centerX - radius * (5.0 / 3.0 * cos(angle));
+    thrusterPoints[2].y = centerY + radius * (5.0 / 3.0 * sin(angle));
+    thrusterPoints[3].x =
+        centerX - radius * (2.0 / 3.0 * cos(angle) + sin(angle));
+    thrusterPoints[3].y =
+        centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
+    SDL_RenderDrawLines(renderer, thrusterPoints, 4);
+  }
+}
