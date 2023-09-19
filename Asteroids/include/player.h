@@ -4,8 +4,8 @@
 // NOTE: Structs/Classes
 class Player {
 public:
-  float centerX, centerY, acceleration, speed, turnspeed, angle, friction,
-      rotation;
+  float centerX, centerY, acceleration, acceleration_X, acceleration_Y, speed,
+      turnspeed, angle, friction, rotation;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool isAlive, isAccelerating;
@@ -19,4 +19,3 @@ public:
   void StopRotating(void);
   void Update(float delta_time);
 };
-
