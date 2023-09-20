@@ -1,6 +1,8 @@
 #include "player.h"
 #include "SDL2/SDL_render.h"
+#include "SDL2_image/SDL_image.h"
 #include "constants.h"
+#include <iostream> // TODO: Remove this
 #include <vector>
 
 Player::Player() {
@@ -8,7 +10,7 @@ Player::Player() {
   this->centerY = SCREEN_HEIGHT / 2.0;
   this->size = 15;
   this->radius = this->size / 2.0;
-  this->angle = 45 / 180.0 * M_PI; // convert to radians
+  this->angle = 90 / 180.0 * M_PI; // convert to radians
   this->acceleration = 50;
   this->turnspeed = 360 / 180.0 * M_PI;
   this->isAlive = true;
@@ -16,6 +18,7 @@ Player::Player() {
   this->score = 0;
   this->lives = 3;
   this->friction = 0.7;
+  this->currentBoosterFrameIndex = 0;
 }
 
 void Player::Reset(void) {
@@ -23,7 +26,7 @@ void Player::Reset(void) {
   this->centerY = SCREEN_HEIGHT / 2.0;
   this->size = 15;
   this->radius = this->size / 2.0;
-  this->angle = 45 / 180.0 * M_PI; // convert to radians
+  this->angle = 90 / 180.0 * M_PI; // convert to radians
   this->acceleration = 100;
   this->turnspeed = 360 / 180.0 * M_PI;
   this->isAlive = true;
@@ -33,6 +36,7 @@ void Player::Reset(void) {
   this->score = 0;
   this->lives = 3;
   this->friction = 0.7;
+  this->currentBoosterFrameIndex = 0;
 }
 
 void Player::Accelerate(void) { isAccelerating = true; }
@@ -92,60 +96,64 @@ void Player::Update(float delta_time) {
 }
 
 void Player::Render(SDL_Renderer *renderer) {
+
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, linePoints, 4);
-  // If player.isAccelerating is true, draw the thruster
-  if (isAccelerating) {
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Point thrusterPoints[4];
-    thrusterPoints[0].x =
-        centerX - radius * (2.0 / 3.0 * cos(angle) + sin(angle));
-    thrusterPoints[0].y =
-        centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
-    thrusterPoints[1].x =
-        centerX - radius * (2.0 / 3.0 * cos(angle) - sin(angle));
-    thrusterPoints[1].y =
-        centerY + radius * (2.0 / 3.0 * sin(angle) + cos(angle));
-    thrusterPoints[2].x = centerX - radius * (5.0 / 3.0 * cos(angle));
-    thrusterPoints[2].y = centerY + radius * (5.0 / 3.0 * sin(angle));
-    thrusterPoints[3].x =
-        centerX - radius * (2.0 / 3.0 * cos(angle) + sin(angle));
-    thrusterPoints[3].y =
-        centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
-    SDL_RenderDrawLines(renderer, thrusterPoints, 4);
 
-    /*TODO: optimise this code to be usable
-    * SDL_Point leftPoint, rightPoint, bottomPoint;
-    * leftPoint.x = centerX - radius * (2.0 / 3.0 * cos(angle) + sin(angle));
-    *  leftPoint.y = centerY + radius * (2.0 / 3.0 * sin(angle) - cos(angle));
-    *  rightPoint.x = centerX - radius * (2.0 / 3.0 * cos(angle) - sin(angle));
-    *  rightPoint.y = centerY + radius * (2.0 / 3.0 * sin(angle) + cos(angle));
-    *  bottomPoint.x = centerX - radius * (5.0 / 3.0 * cos(angle));
-    *  bottomPoint.y = centerY + radius * (5.0 / 3.0 * sin(angle));
-    *  const std::vector<SDL_Vertex> verts = {
-    *      {
-    *          SDL_FPoint{static_cast<float>(leftPoint.x),
-    *                     static_cast<float>(leftPoint.y)},
-    *          SDL_Color{255, 255, 255, 255},
-    *          SDL_FPoint{0.0},
-    *      },
-    *      {
-    *          SDL_FPoint{static_cast<float>(rightPoint.x),
-    *                     static_cast<float>(rightPoint.y)},
-    *          SDL_Color{255, 165, 0, 255},
-    *          SDL_FPoint{0.0},
-    *      },
-    *      {
-    *          SDL_FPoint{static_cast<float>(bottomPoint.x),
-    *                     static_cast<float>(bottomPoint.y)},
-    *          SDL_Color{255, 255, 255, 255},
-    *          SDL_FPoint{0.0},
-    *      },
-    *  };
-    *
-    *  SDL_RenderGeometry(renderer, nullptr, verts.data(), verts.size(), nullptr,
-    *                     0);
-    *  SDL_RenderPresent(renderer);
-    */
+  // If player.isAccelerating is true, draw the thruster
+  // if (isAccelerating) {
+  // Load the booster.png sprite sheet
+  SDL_Texture *boosterTexture =
+      IMG_LoadTexture(renderer, "../assets/sprites/booster.png");
+
+  // Create a vector of SDL_Rects to hold the sprite sheet frames
+  std::vector<SDL_Rect> boosterFrames;
+  // Create the SDL_Rects for each frame
+  SDL_Rect frame[4];
+  for (int i = 0; i < 4; i++) {
+    // Each booster is 4 px wide and 5 px tall
+    // There are 4 frames in the sprite sheet
+    // These are separated by a 4 px gap
+    frame[i].x = i * 8;
+    frame[i].y = 0;
+    frame[i].w = 4;
+    frame[i].h = 5;
+    boosterFrames.push_back(frame[i]);
+  }
+
+  // Create a SDL_Rect for the destination of the sprite
+  SDL_Rect dest;
+  // TODO:
+  // The destination is fixed below the ship
+  // It should be rotated correctly with the ship
+  dest.x = centerX - radius;
+  dest.y = centerY + radius;
+  dest.w = radius * 2;
+  dest.h = radius * 2;
+
+  // Calculate the angle for the booster based on the ship's angle
+  double boosterAngle = -angle * 180.0 / M_PI + 90;
+
+  // Render the booster texture
+  SDL_RenderCopyEx(renderer, boosterTexture,
+                   &boosterFrames[currentBoosterFrameIndex], &dest,
+                   boosterAngle, NULL, SDL_FLIP_NONE);
+
+  // Don't forget to free the boosterTexture when you're done with it
+  SDL_DestroyTexture(boosterTexture);
+  //}
+}
+
+void Player::Animate() {
+  // Constants for animation
+  const int NUM_BOOSTER_FRAMES = 4;
+
+  if (isAccelerating) {
+    currentBoosterFrameIndex += 1; // Switch to the next frame
+    if (currentBoosterFrameIndex >= NUM_BOOSTER_FRAMES) {
+      currentBoosterFrameIndex = 0; // Go back to the first frame
+    }
+  } else {
+    currentBoosterFrameIndex = 0; // Reset to the first frame
   }
 }

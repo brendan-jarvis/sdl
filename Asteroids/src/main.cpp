@@ -162,6 +162,15 @@ void updateGame(void) {
   // Update player
   player.Update(deltaTime);
 
+  // Every 0.2 seconds call Player.Animate()
+  static float timeSinceLastFrame = 0.0f;
+  timeSinceLastFrame += deltaTime;
+  // 0.05f is 1/20th of a second
+  if (timeSinceLastFrame > 0.05f) {
+    player.Animate();
+    timeSinceLastFrame -= 0.05f;
+  }
+
   // Update asteroids
   for (int i = 0; i < 10; i++) {
     if (asteroids[i].isAlive) {
