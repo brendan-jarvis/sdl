@@ -30,6 +30,11 @@ Asteroid::Asteroid(float playerX, float playerY) {
   dx = speed * cos(angle);
   dy = speed * sin(angle);
 
+  // rotation is random between 0 and 360
+  // rotationSpeed is random between -0.5 and 0.5
+  rotation = rand() % 360;
+  rotationSpeed = rand() % 100 / 100.0 - 0.5;
+
   // isAlive is true
   isAlive = true;
 }
@@ -50,3 +55,5 @@ void Asteroid::Update(float deltaTime) {
     centerY = 0 - size / 2.0;
   }
 }
+
+void Asteroid::Animate() { rotation += rotationSpeed; }

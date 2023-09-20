@@ -174,6 +174,7 @@ void updateGame(void) {
   // Update asteroids
   for (int i = 0; i < 10; i++) {
     if (asteroids[i].isAlive) {
+      asteroids[i].Animate();
       asteroids[i].Update(deltaTime);
     }
   }
@@ -205,7 +206,8 @@ void renderOutput(void) {
       asteroidRect.w = asteroids[i].size;
       asteroidRect.h = asteroids[i].size;
 
-      SDL_RenderCopy(renderer, asteroidTexture, NULL, &asteroidRect);
+      SDL_RenderCopyEx(renderer, asteroidTexture, NULL, &asteroidRect,
+                       asteroids[i].rotation, NULL, SDL_FLIP_NONE);
     }
   }
 
