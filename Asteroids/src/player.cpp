@@ -101,47 +101,45 @@ void Player::Render(SDL_Renderer *renderer) {
   SDL_RenderDrawLines(renderer, linePoints, 4);
 
   // If player.isAccelerating is true, draw the thruster
-  // if (isAccelerating) {
-  // Load the booster.png sprite sheet
-  SDL_Texture *boosterTexture =
-      IMG_LoadTexture(renderer, "../assets/sprites/booster.png");
+  if (isAccelerating) {
+    // Load the booster.png sprite sheet
+    SDL_Texture *boosterTexture =
+        IMG_LoadTexture(renderer, "../assets/sprites/booster.png");
 
-  // Create a vector of SDL_Rects to hold the sprite sheet frames
-  std::vector<SDL_Rect> boosterFrames;
-  // Create the SDL_Rects for each frame
-  SDL_Rect frame[4];
-  for (int i = 0; i < 4; i++) {
-    // Each booster is 4 px wide and 5 px tall
-    // There are 4 frames in the sprite sheet
-    // These are separated by a 4 px gap
-    frame[i].x = i * 8;
-    frame[i].y = 0;
-    frame[i].w = 4;
-    frame[i].h = 5;
-    boosterFrames.push_back(frame[i]);
+    // Create a vector of SDL_Rects to hold the sprite sheet frames
+    std::vector<SDL_Rect> boosterFrames;
+    // Create the SDL_Rects for each frame
+    SDL_Rect frame[4];
+    for (int i = 0; i < 4; i++) {
+      // Each booster is 4 px wide and 5 px tall
+      // There are 4 frames in the sprite sheet
+      // These are separated by a 4 px gap
+      frame[i].x = i * 8;
+      frame[i].y = 0;
+      frame[i].w = 4;
+      frame[i].h = 5;
+      boosterFrames.push_back(frame[i]);
+    }
+
+    // Create a SDL_Rect for the destination of the sprite
+    SDL_Rect dest;
+    double boosterAngle = -angle * 180.0 / M_PI + 90; // convert to degrees
+    float offset_X = 6.0 / 3.0 * radius * cos(angle - M_PI);
+    float offset_Y = -6.0 / 3.0 * radius * sin(angle - M_PI);
+
+    dest.x = centerX + offset_X - radius;
+    dest.y = centerY + offset_Y - radius;
+    dest.w = radius * 2;
+    dest.h = radius * 2;
+
+    // Render the booster texture
+    SDL_RenderCopyEx(renderer, boosterTexture,
+                     &boosterFrames[currentBoosterFrameIndex], &dest,
+                     boosterAngle, NULL, SDL_FLIP_NONE);
+
+    // Don't forget to free the boosterTexture when you're done with it
+    SDL_DestroyTexture(boosterTexture);
   }
-
-  // Create a SDL_Rect for the destination of the sprite
-  SDL_Rect dest;
-  // TODO:
-  // The destination is fixed below the ship
-  // It should be rotated correctly with the ship
-  dest.x = centerX - radius;
-  dest.y = centerY + radius;
-  dest.w = radius * 2;
-  dest.h = radius * 2;
-
-  // Calculate the angle for the booster based on the ship's angle
-  double boosterAngle = -angle * 180.0 / M_PI + 90;
-
-  // Render the booster texture
-  SDL_RenderCopyEx(renderer, boosterTexture,
-                   &boosterFrames[currentBoosterFrameIndex], &dest,
-                   boosterAngle, NULL, SDL_FLIP_NONE);
-
-  // Don't forget to free the boosterTexture when you're done with it
-  SDL_DestroyTexture(boosterTexture);
-  //}
 }
 
 void Player::Animate() {
