@@ -6,5 +6,4 @@ public:
 
   Asteroid(float playerX, float playerY);
   void Update(float deltaTime);
-  void Animate();
 };
