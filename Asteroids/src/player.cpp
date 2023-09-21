@@ -18,7 +18,6 @@ Player::Player() {
   this->score = 0;
   this->lives = 3;
   this->friction = 0.7;
-  this->currentBoosterFrameIndex = 0;
 }
 
 void Player::Reset(void) {
@@ -36,7 +35,6 @@ void Player::Reset(void) {
   this->score = 0;
   this->lives = 3;
   this->friction = 0.7;
-  this->currentBoosterFrameIndex = 0;
 }
 
 void Player::Accelerate(void) { isAccelerating = true; }
@@ -100,6 +98,35 @@ void Player::Render(SDL_Renderer *renderer) {
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, linePoints, 4);
 
+  // WARNING: This shouldn't go here
+  // TODO: separate rendering from updating and initialising animations
+  SDL_Texture *explosionTexture =
+      IMG_LoadTexture(renderer, "../assets/sprites/orange_explosion.png");
+
+  // Create a vector of SDL_Rects to hold the sprite sheet frames
+  std::vector<SDL_Rect> explosionFrames;
+  // Create the SDL_Rects for each frame
+  SDL_Rect frame[4];
+  for (int i = 0; i < 4; i++){
+    // Each explosion is 8x8 px, with no gap between frames
+    frame[i].x = i * 8;
+    frame[i].y = 0;
+    frame[i].w = 8;
+    frame[i].h = 8;
+    explosionFrames.push_back(frame[i]);
+  }
+
+  int numberOfFrames = explosionFrames.size();
+  int frameDelay = 200;
+  int currentFrame = SDL_GetTicks() / frameDelay % numberOfFrames;
+
+  // Create a SDL_Rect for the destination of the sprite
+  SDL_Rect explosionDest = {100, 100, size * 2, size * 2};
+  SDL_RenderCopy(renderer, explosionTexture, &explosionFrames[currentFrame], &explosionDest);
+
+  // Don't forget to free the explosionTexture when you're done with it
+  SDL_DestroyTexture(explosionTexture);
+
   // If player.isAccelerating is true, draw the thruster
   if (isAccelerating) {
     // Load the booster.png sprite sheet
@@ -132,6 +159,11 @@ void Player::Render(SDL_Renderer *renderer) {
     dest.w = radius * 2;
     dest.h = radius * 2;
 
+    int numberOfBoosterFrames = boosterFrames.size();
+    int boosterFrameDelay = 100;
+    int currentBoosterFrameIndex =
+        SDL_GetTicks() / boosterFrameDelay % numberOfBoosterFrames;
+
     // Render the booster texture
     SDL_RenderCopyEx(renderer, boosterTexture,
                      &boosterFrames[currentBoosterFrameIndex], &dest,
@@ -139,19 +171,5 @@ void Player::Render(SDL_Renderer *renderer) {
 
     // Don't forget to free the boosterTexture when you're done with it
     SDL_DestroyTexture(boosterTexture);
-  }
-}
-
-void Player::Animate() {
-  // Constants for animation
-  const int NUM_BOOSTER_FRAMES = 4;
-
-  if (isAccelerating) {
-    currentBoosterFrameIndex += 1; // Switch to the next frame
-    if (currentBoosterFrameIndex >= NUM_BOOSTER_FRAMES) {
-      currentBoosterFrameIndex = 0; // Go back to the first frame
-    }
-  } else {
-    currentBoosterFrameIndex = 0; // Reset to the first frame
   }
 }
