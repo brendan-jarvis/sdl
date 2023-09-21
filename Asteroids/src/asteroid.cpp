@@ -54,6 +54,7 @@ void Asteroid::Update(float deltaTime) {
   } else if (centerY > SCREEN_HEIGHT + size / 2.0) {
     centerY = 0 - size / 2.0;
   }
-}
 
-void Asteroid::Animate() { rotation += rotationSpeed; }
+  // Animation updates
+  rotation += this->rotationSpeed;
+}
