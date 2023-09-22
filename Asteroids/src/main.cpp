@@ -25,6 +25,7 @@ std::vector<Asteroid> asteroids;
 SDL_Texture *backgroundTexture = NULL;
 SDL_Event event;
 TTF_Font *font = nullptr;
+SDL_Texture *asteroidTexture = nullptr;
 
 void setup(void) {
   // Seed random number generator
@@ -56,7 +57,7 @@ void setup(void) {
 
   // Push 10 asteroids to the vector
   for (int i = 0; i < 10; i++) {
-    asteroids.push_back(Asteroid(player.centerX, player.centerY));
+    asteroids.push_back(Asteroid(renderer, player.centerX, player.centerY));
   }
 }
 
@@ -181,24 +182,8 @@ void renderOutput(void) {
   SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
 
   // Draw the asteroids
-  SDL_Texture *asteroidTexture =
-      IMG_LoadTexture(renderer, "../assets/noun-asteroid-5303658.svg");
-
-  if (!asteroidTexture) {
-    std::cout << "Failed to load texture: " << IMG_GetError() << std::endl;
-  }
-
   for (int i = 0; i < 10; i++) {
-    if (asteroids[i].isAlive) {
-      SDL_Rect asteroidRect;
-      asteroidRect.x = asteroids[i].centerX;
-      asteroidRect.y = asteroids[i].centerY;
-      asteroidRect.w = asteroids[i].size;
-      asteroidRect.h = asteroids[i].size;
-
-      SDL_RenderCopyEx(renderer, asteroidTexture, NULL, &asteroidRect,
-                       asteroids[i].rotation, NULL, SDL_FLIP_NONE);
-    }
+    asteroids[i].Render(renderer);
   }
 
   // Draw the player

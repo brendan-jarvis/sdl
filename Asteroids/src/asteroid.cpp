@@ -1,9 +1,11 @@
 #include "asteroid.h"
+#include "SDL2/SDL_render.h"
+#include "SDL2_image/SDL_image.h"
 #include "constants.h"
 #include <cmath>
 #include <iostream>
 
-Asteroid::Asteroid(float playerX, float playerY) {
+Asteroid::Asteroid(SDL_Renderer *renderer, float playerX, float playerY) {
   // size is random between 25 and 30
   size = rand() % 5 + 25;
 
@@ -35,6 +37,17 @@ Asteroid::Asteroid(float playerX, float playerY) {
   rotation = rand() % 360;
   rotationSpeed = rand() % 100 / 100.0 - 0.5;
 
+  // Create asteroidRect
+  asteroidRect = {static_cast<int>(centerX), static_cast<int>(centerY), size,
+                  size};
+
+  // Load the asteroid texture
+  asteroidTexture = IMG_LoadTexture(renderer, "../assets/noun-asteroid-5303658.svg");
+
+  if (!asteroidTexture) {
+    std::cout << "Failed to load texture: " << SDL_GetError() << std::endl;
+  }
+
   // isAlive is true
   isAlive = true;
 }
@@ -57,4 +70,13 @@ void Asteroid::Update(float deltaTime) {
 
   // Animation updates
   rotation += this->rotationSpeed;
+
+  // Update asteroidRect
+  asteroidRect = {static_cast<int>(centerX), static_cast<int>(centerY), size,
+                  size};
+}
+
+void Asteroid::Render(SDL_Renderer *renderer) {
+  SDL_RenderCopyEx(renderer, asteroidTexture, NULL, &asteroidRect, rotation,
+                   NULL, SDL_FLIP_NONE);
 }
