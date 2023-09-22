@@ -6,8 +6,8 @@
 #include <iostream>
 
 Asteroid::Asteroid(SDL_Renderer *renderer, float playerX, float playerY) {
-  // size is random between 25 and 30
-  size = rand() % 5 + 25;
+  // size is 32
+  size = 32;
 
   // Generate random position
   centerX = rand() % (SCREEN_WIDTH - size) + size / 2.0;
@@ -42,7 +42,7 @@ Asteroid::Asteroid(SDL_Renderer *renderer, float playerX, float playerY) {
                   size};
 
   // Load the asteroid texture
-  asteroidTexture = IMG_LoadTexture(renderer, "../assets/noun-asteroid-5303658.svg");
+  asteroidTexture = IMG_LoadTexture(renderer, "../assets/sprites/asteroid.png");
 
   if (!asteroidTexture) {
     std::cout << "Failed to load texture: " << SDL_GetError() << std::endl;

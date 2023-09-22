@@ -113,7 +113,8 @@ void Player::Render(SDL_Renderer *renderer) {
     frame[i].y = 0;
     frame[i].w = 8;
     frame[i].h = 8;
-    explosionFrames.push_back(frame[i]);
+    // push frame to the top
+    explosionFrames.insert(explosionFrames.begin(), frame[i]);
   }
 
   int numberOfFrames = explosionFrames.size();
