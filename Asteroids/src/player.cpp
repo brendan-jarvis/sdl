@@ -2,10 +2,10 @@
 #include "SDL2/SDL_render.h"
 #include "SDL2_image/SDL_image.h"
 #include "constants.h"
-#include <iostream> // TODO: Remove this
+#include <iostream>
 #include <vector>
 
-Player::Player() {
+Player::Player(SDL_Renderer *renderer) {
   this->centerX = SCREEN_WIDTH / 2.0;
   this->centerY = SCREEN_HEIGHT / 2.0;
   this->size = 15;
@@ -18,6 +18,47 @@ Player::Player() {
   this->score = 0;
   this->lives = 3;
   this->friction = 0.7;
+
+  // Load textures
+  this->explosionTexture =
+      IMG_LoadTexture(renderer, "../assets/sprites/orange_explosion.png");
+  
+  if (!explosionTexture) {
+    std::cout << "Failed to load explosion texture: " << SDL_GetError() << std::endl;
+  }
+
+  this->boosterTexture =
+      IMG_LoadTexture(renderer, "../assets/sprites/booster.png");
+
+  if (!boosterTexture) {
+    std::cout << "Failed to load booster texture: " << SDL_GetError() << std::endl;
+  }
+
+  // Create the SDL_Rects for each explosion frame
+  for (int i = 0; i < 4; i++) {
+    SDL_Rect frame;
+    frame.x = i * 8;
+    frame.y = 0;
+    frame.w = 8;
+    frame.h = 8;
+    explosionFrames.push_back(frame);
+  }
+
+  // Create the SDL_Rects for each booster frame
+  for (int i = 0; i < 4; i++) {
+    SDL_Rect frame;
+    frame.x = i * 8;
+    frame.y = 0;
+    frame.w = 4;
+    frame.h = 5;
+    boosterFrames.push_back(frame);
+  }
+
+  // Create the SDL_Rect for the destination of the explosion sprite
+  explosionRect = {100, 100, size * 2, size * 2};
+
+  // Create the SDL_Rect for the destination of the booster sprite
+  boosterRect = {100, 100, size * 2, size * 2};
 }
 
 void Player::Reset(void) {
@@ -91,75 +132,42 @@ void Player::Update(float delta_time) {
   } else if (centerY > SCREEN_HEIGHT + radius) {
     centerY = 0 - radius;
   }
+
+  // TODO: Move this from 100,100 to the center of the player
+  // Update the explosion destination
+  explosionDest.x = centerX - size;
+  explosionDest.y = centerY - size;
+  explosionDest.w = size * 2;
+  explosionDest.h = size * 2;
+
+  // Update the booster destination
+  boosterAngle = -angle * 180.0 / M_PI + 90; // convert to degrees
+  float offset_X = 6.0 / 3.0 * radius * cos(angle - M_PI);
+  float offset_Y = -6.0 / 3.0 * radius * sin(angle - M_PI);
+
+  boosterDest.x = centerX + offset_X - radius;
+  boosterDest.y = centerY + offset_Y - radius;
+  boosterDest.w = radius * 2;
+  boosterDest.h = radius * 2;
 }
 
 void Player::Render(SDL_Renderer *renderer) {
-
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderDrawLines(renderer, linePoints, 4);
 
-  // WARNING: This shouldn't go here
-  // TODO: separate rendering from updating and initialising animations
-  SDL_Texture *explosionTexture =
-      IMG_LoadTexture(renderer, "../assets/sprites/orange_explosion.png");
-
-  // Create a vector of SDL_Rects to hold the sprite sheet frames
-  std::vector<SDL_Rect> explosionFrames;
-  // Create the SDL_Rects for each frame
-  SDL_Rect frame[4];
-  for (int i = 0; i < 4; i++){
-    // Each explosion is 8x8 px, with no gap between frames
-    frame[i].x = i * 8;
-    frame[i].y = 0;
-    frame[i].w = 8;
-    frame[i].h = 8;
-    // push frame to the top
-    explosionFrames.insert(explosionFrames.begin(), frame[i]);
-  }
-
+  if (!isAlive) {
+    
   int numberOfFrames = explosionFrames.size();
   int frameDelay = 200;
   int currentFrame = SDL_GetTicks() / frameDelay % numberOfFrames;
 
-  // Create a SDL_Rect for the destination of the sprite
-  SDL_Rect explosionDest = {100, 100, size * 2, size * 2};
-  SDL_RenderCopy(renderer, explosionTexture, &explosionFrames[currentFrame], &explosionDest);
+  SDL_RenderCopy(renderer, explosionTexture, &explosionFrames[currentFrame],
+                 &explosionDest);
+  }
 
-  // Don't forget to free the explosionTexture when you're done with it
-  SDL_DestroyTexture(explosionTexture);
 
   // If player.isAccelerating is true, draw the thruster
   if (isAccelerating) {
-    // Load the booster.png sprite sheet
-    SDL_Texture *boosterTexture =
-        IMG_LoadTexture(renderer, "../assets/sprites/booster.png");
-
-    // Create a vector of SDL_Rects to hold the sprite sheet frames
-    std::vector<SDL_Rect> boosterFrames;
-    // Create the SDL_Rects for each frame
-    SDL_Rect frame[4];
-    for (int i = 0; i < 4; i++) {
-      // Each booster is 4 px wide and 5 px tall
-      // There are 4 frames in the sprite sheet
-      // These are separated by a 4 px gap
-      frame[i].x = i * 8;
-      frame[i].y = 0;
-      frame[i].w = 4;
-      frame[i].h = 5;
-      boosterFrames.push_back(frame[i]);
-    }
-
-    // Create a SDL_Rect for the destination of the sprite
-    SDL_Rect dest;
-    double boosterAngle = -angle * 180.0 / M_PI + 90; // convert to degrees
-    float offset_X = 6.0 / 3.0 * radius * cos(angle - M_PI);
-    float offset_Y = -6.0 / 3.0 * radius * sin(angle - M_PI);
-
-    dest.x = centerX + offset_X - radius;
-    dest.y = centerY + offset_Y - radius;
-    dest.w = radius * 2;
-    dest.h = radius * 2;
-
     int numberOfBoosterFrames = boosterFrames.size();
     int boosterFrameDelay = 100;
     int currentBoosterFrameIndex =
@@ -167,10 +175,12 @@ void Player::Render(SDL_Renderer *renderer) {
 
     // Render the booster texture
     SDL_RenderCopyEx(renderer, boosterTexture,
-                     &boosterFrames[currentBoosterFrameIndex], &dest,
+                     &boosterFrames[currentBoosterFrameIndex], &boosterDest,
                      boosterAngle, NULL, SDL_FLIP_NONE);
-
-    // Don't forget to free the boosterTexture when you're done with it
-    SDL_DestroyTexture(boosterTexture);
   }
+}
+
+Player::~Player() {
+  SDL_DestroyTexture(boosterTexture);
+  SDL_DestroyTexture(explosionTexture);
 }
