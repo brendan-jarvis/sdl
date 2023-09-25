@@ -18,20 +18,23 @@ Player::Player(SDL_Renderer *renderer) {
   this->score = 0;
   this->lives = 3;
   this->friction = 0.7;
+  this->hasExploded = false;
 
   // Load textures
   this->explosionTexture =
       IMG_LoadTexture(renderer, "../assets/sprites/orange_explosion.png");
-  
+
   if (!explosionTexture) {
-    std::cout << "Failed to load explosion texture: " << SDL_GetError() << std::endl;
+    std::cout << "Failed to load explosion texture: " << SDL_GetError()
+              << std::endl;
   }
 
   this->boosterTexture =
       IMG_LoadTexture(renderer, "../assets/sprites/booster.png");
 
   if (!boosterTexture) {
-    std::cout << "Failed to load booster texture: " << SDL_GetError() << std::endl;
+    std::cout << "Failed to load booster texture: " << SDL_GetError()
+              << std::endl;
   }
 
   // Create the SDL_Rects for each explosion frame
@@ -73,9 +76,10 @@ void Player::Reset(void) {
   this->isAccelerating = false;
   this->acceleration_X = 0;
   this->acceleration_Y = 0;
-  this->score = 0;
-  this->lives = 3;
+  this->lives -= 1;
   this->friction = 0.7;
+  this->hasExploded = false;
+  this->explosionFrame = 0;
 }
 
 void Player::Accelerate(void) { isAccelerating = true; }
@@ -133,7 +137,6 @@ void Player::Update(float delta_time) {
     centerY = 0 - radius;
   }
 
-  // TODO: Move this from 100,100 to the center of the player
   // Update the explosion destination
   explosionDest.x = centerX - size;
   explosionDest.y = centerY - size;
@@ -152,21 +155,37 @@ void Player::Update(float delta_time) {
 }
 
 void Player::Render(SDL_Renderer *renderer) {
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-  SDL_RenderDrawLines(renderer, linePoints, 4);
-
-  if (!isAlive) {
-    
-  int numberOfFrames = explosionFrames.size();
-  int frameDelay = 200;
-  int currentFrame = SDL_GetTicks() / frameDelay % numberOfFrames;
-
-  SDL_RenderCopy(renderer, explosionTexture, &explosionFrames[currentFrame],
-                 &explosionDest);
+  // Draw the player
+  if (isAlive) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawLines(renderer, linePoints, 4);
   }
 
+  if (!isAlive) {
+    // Stop player movement
+    this->acceleration_X = 0;
+    this->acceleration_Y = 0;
 
-  // If player.isAccelerating is true, draw the thruster
+    // Render the explosion
+    int numberOfFrames = explosionFrames.size();
+    int frameDelay = 500;
+    int currentFrame = SDL_GetTicks() / frameDelay % numberOfFrames;
+
+    // Draw small explosion as glowing wreckage 
+    if (hasExploded) {
+      SDL_RenderCopy(renderer, explosionTexture, &explosionFrames[0],
+                     &explosionDest);
+    } else {
+      SDL_RenderCopy(renderer, explosionTexture, &explosionFrames[currentFrame],
+                     &explosionDest);
+
+      if (currentFrame == numberOfFrames - 1) {
+        hasExploded = true;
+      }
+    }
+  }
+
+  // If isAccelerating is true, draw the thruster
   if (isAccelerating) {
     int numberOfBoosterFrames = boosterFrames.size();
     int boosterFrameDelay = 100;
