@@ -19,7 +19,7 @@ float timeCount = 0.0f;
 float frameRate = 0.0f;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
-Player player;
+Player *player;
 Star stars[100];
 std::vector<Asteroid> asteroids;
 SDL_Texture *backgroundTexture = NULL;
@@ -31,8 +31,7 @@ void setup(void) {
   // Seed random number generator
   srand(time(NULL));
 
-  // PERF: Create stars surface
-  // Doing this here saves us having to draw the stars every frame
+  // Create stars surface
   SDL_Surface *backgroundSurface = NULL;
   backgroundSurface =
       SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
@@ -55,9 +54,13 @@ void setup(void) {
   SDL_FreeSurface(backgroundSurface);
   SDL_DestroyRenderer(tempRenderer);
 
+  // Create player
+  player = new Player(renderer);
+
   // Push 10 asteroids to the vector
   for (int i = 0; i < 10; i++) {
-    asteroids.push_back(Asteroid(renderer, player.centerX, player.centerY));
+    asteroids.push_back(
+        Asteroid(renderer, SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0));
   }
 }
 
@@ -112,20 +115,20 @@ void processInput(void) {
         gameIsRunning = false;
         break;
       case SDLK_r:
-        player.Reset();
+        player->Reset();
         break;
       }
       break;
     case SDL_KEYUP:
       switch (event.key.keysym.sym) {
       case SDLK_UP:
-        player.StopAccelerating();
+        player->StopAccelerating();
         break;
       case SDLK_LEFT:
-        player.StopRotating();
+        player->StopRotating();
         break;
       case SDLK_RIGHT:
-        player.StopRotating();
+        player->StopRotating();
         break;
       }
       break;
@@ -133,13 +136,13 @@ void processInput(void) {
   }
 
   if (state[SDL_SCANCODE_UP]) {
-    player.Accelerate();
+    player->Accelerate();
   }
   if (state[SDL_SCANCODE_LEFT]) {
-    player.RotateLeft();
+    player->RotateLeft();
   }
   if (state[SDL_SCANCODE_RIGHT]) {
-    player.RotateRight();
+    player->RotateRight();
   }
 }
 
@@ -161,12 +164,19 @@ void updateGame(void) {
   lastFrameTime = currentTime;
 
   // Update player
-  player.Update(deltaTime);
+  player->Update(deltaTime);
 
   // Update asteroids
   for (int i = 0; i < 10; i++) {
     if (asteroids[i].isAlive) {
       asteroids[i].Update(deltaTime);
+
+      // Check for collision between player and asteroid
+      if (player->isAlive) {
+        if (asteroids[i].CheckCollision(player->centerX, player->centerY)) {
+          player->isAlive = false;
+        }
+      }
     }
   }
 
@@ -187,12 +197,12 @@ void renderOutput(void) {
   }
 
   // Draw the player
-  player.Render(renderer);
+  player->Render(renderer);
 
   // Create surface to contain text
   SDL_Color color = {255, 255, 255};
-  std::string score = "Score: " + std::to_string(player.score) +
-                      "    Lives: " + std::to_string(player.lives) +
+  std::string score = "Score: " + std::to_string(player->score) +
+                      "    Lives: " + std::to_string(player->lives) +
                       "    FPS: " + std::to_string((int)frameRate);
 
   // Check if font is valid
