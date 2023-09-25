@@ -9,6 +9,9 @@ Asteroid::Asteroid(SDL_Renderer *renderer, float playerX, float playerY) {
   // size is 32
   size = 32;
 
+  // radius is half of size
+  radius = size / 2.0;
+
   // Generate random position
   centerX = rand() % (SCREEN_WIDTH - size) + size / 2.0;
   centerY = rand() % (SCREEN_HEIGHT - size) + size / 2.0;
@@ -41,6 +44,7 @@ Asteroid::Asteroid(SDL_Renderer *renderer, float playerX, float playerY) {
   asteroidRect = {static_cast<int>(centerX), static_cast<int>(centerY), size,
                   size};
 
+  // PERF: Can load this once and pass it to the constructor
   // Load the asteroid texture
   asteroidTexture = IMG_LoadTexture(renderer, "../assets/sprites/asteroid.png");
 
@@ -79,4 +83,13 @@ void Asteroid::Update(float deltaTime) {
 void Asteroid::Render(SDL_Renderer *renderer) {
   SDL_RenderCopyEx(renderer, asteroidTexture, NULL, &asteroidRect, rotation,
                    NULL, SDL_FLIP_NONE);
+}
+
+bool Asteroid::CheckCollision(float playerX, float playerY) {
+  if (playerX > centerX - radius && playerX < centerX + radius &&
+      playerY > centerY - radius && playerY < centerY + radius) {
+    return true;
+  } else {
+    return false;
+  }
 }
