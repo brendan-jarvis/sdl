@@ -166,30 +166,53 @@ void updateGame(void) {
   // Update player
   player->Update(deltaTime);
 
-  // Update asteroids
-  for (int i = 0; i < 10; i++) {
-    if (asteroids[i].isAlive) {
-      asteroids[i].Update(deltaTime);
-
-      // Check for collision between player and asteroid
-      if (player->isAlive) {
-        if (asteroids[i].CheckPlayerCollision(player->centerX,
-                                              player->centerY)) {
-          player->isAlive = false;
-        }
-      }
-    }
-  }
-
   // Check for collision between asteroids
   for (int i = 0; i < asteroids.size(); i++) {
-    for (int j = 0; j < asteroids.size(); j++) {
-      if (i != j) {
-        if (asteroids[i].CheckAsteroidCollision(&asteroids[j])) {
-          std::cout << "Collision between asteroid " << i << " and asteroid "
-                    << j << std::endl;
-          // TODO: making the asteroids bounce off each other or explode
-        }
+
+    // Update the asteroid
+    asteroids[i].Update(deltaTime);
+
+    // Check for collision between player and asteroid
+    if (player->isAlive) {
+      if (asteroids[i].CheckPlayerCollision(player->centerX, player->centerY)) {
+        player->isAlive = false;
+      }
+    }
+
+    for (int j = i + 1; j < asteroids.size(); j++) {
+      if (asteroids[i].CheckAsteroidCollision(&asteroids[j])) {
+        // Calculate the vector between the centers of the asteroids
+        float dx = asteroids[j].centerX - asteroids[i].centerX;
+        float dy = asteroids[j].centerY - asteroids[i].centerY;
+
+        // Normalize the vector
+        float distance = sqrt(dx * dx + dy * dy);
+        dx /= distance;
+        dy /= distance;
+
+        // Calculate the velocity of each asteroid along the line connecting
+        // their centers
+        float velocity_i = dx * asteroids[i].dx + dy * asteroids[i].dy;
+        float velocity_j = dx * asteroids[j].dx + dy * asteroids[j].dy;
+
+        // Swap the velocities of the asteroids along this line
+        float temp = velocity_i;
+        velocity_i = velocity_j;
+        velocity_j = temp;
+
+        // Update the velocities of the asteroids
+        asteroids[i].dx += dx * (velocity_i - velocity_j);
+        asteroids[i].dy += dy * (velocity_i - velocity_j);
+        asteroids[j].dx += dx * (velocity_j - velocity_i);
+        asteroids[j].dy += dy * (velocity_j - velocity_i);
+
+        // Adjust the position of one asteroid so they don't overlap
+        float overlap =
+            0.5 * (distance - asteroids[i].radius - asteroids[j].radius);
+        asteroids[i].centerX -= overlap * dx;
+        asteroids[i].centerY -= overlap * dy;
+        asteroids[j].centerX += overlap * dx;
+        asteroids[j].centerY += overlap * dy;
       }
     }
   }
