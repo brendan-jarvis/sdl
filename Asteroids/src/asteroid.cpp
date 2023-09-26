@@ -41,8 +41,8 @@ Asteroid::Asteroid(SDL_Renderer *renderer, float playerX, float playerY) {
   rotationSpeed = rand() % 100 / 100.0 - 0.5;
 
   // Create asteroidRect
-  asteroidRect = {static_cast<int>(centerX), static_cast<int>(centerY), size,
-                  size};
+  asteroidRect = {static_cast<int>(centerX - radius),
+                  static_cast<int>(centerY - radius), size, size};
 
   // PERF: Can load this once and pass it to the constructor
   // Load the asteroid texture
@@ -76,8 +76,8 @@ void Asteroid::Update(float deltaTime) {
   rotation += this->rotationSpeed;
 
   // Update asteroidRect
-  asteroidRect = {static_cast<int>(centerX), static_cast<int>(centerY), size,
-                  size};
+  asteroidRect = {static_cast<int>(centerX - radius),
+                  static_cast<int>(centerY - radius), size, size};
 }
 
 void Asteroid::Render(SDL_Renderer *renderer) {
@@ -85,9 +85,22 @@ void Asteroid::Render(SDL_Renderer *renderer) {
                    NULL, SDL_FLIP_NONE);
 }
 
-bool Asteroid::CheckCollision(float playerX, float playerY) {
+bool Asteroid::CheckPlayerCollision(float playerX, float playerY) {
+  // Checks collisions with a simple radius check
   if (playerX > centerX - radius && playerX < centerX + radius &&
       playerY > centerY - radius && playerY < centerY + radius) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool Asteroid::CheckAsteroidCollision(Asteroid *asteroid) {
+  // Checks collisions with a simple radius check
+  if (asteroid->centerX > centerX - radius &&
+      asteroid->centerX < centerX + radius &&
+      asteroid->centerY > centerY - radius &&
+      asteroid->centerY < centerY + radius) {
     return true;
   } else {
     return false;
