@@ -173,8 +173,22 @@ void updateGame(void) {
 
       // Check for collision between player and asteroid
       if (player->isAlive) {
-        if (asteroids[i].CheckCollision(player->centerX, player->centerY)) {
+        if (asteroids[i].CheckPlayerCollision(player->centerX,
+                                              player->centerY)) {
           player->isAlive = false;
+        }
+      }
+    }
+  }
+
+  // Check for collision between asteroids
+  for (int i = 0; i < asteroids.size(); i++) {
+    for (int j = 0; j < asteroids.size(); j++) {
+      if (i != j) {
+        if (asteroids[i].CheckAsteroidCollision(&asteroids[j])) {
+          std::cout << "Collision between asteroid " << i << " and asteroid "
+                    << j << std::endl;
+          // TODO: making the asteroids bounce off each other or explode
         }
       }
     }
