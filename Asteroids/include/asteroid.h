@@ -10,5 +10,7 @@ public:
   Asteroid(SDL_Renderer *renderer, float playerX, float playerY);
   void Update(float deltaTime);
   void Render(SDL_Renderer *renderer);
-  bool CheckCollision(float playerX, float playerY);
+  bool CheckPlayerCollision(float playerX, float playerY);
+  bool CheckAsteroidCollision(Asteroid *asteroid);
 };
+
