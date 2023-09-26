@@ -79,7 +79,6 @@ void Player::Reset(void) {
   this->lives -= 1;
   this->friction = 0.7;
   this->hasExploded = false;
-  this->explosionFrame = 0;
 }
 
 void Player::Accelerate(void) { isAccelerating = true; }
@@ -159,6 +158,19 @@ void Player::Render(SDL_Renderer *renderer) {
   if (isAlive) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawLines(renderer, linePoints, 4);
+
+    // If isAccelerating is true, draw the thruster
+    if (isAccelerating) {
+      int numberOfBoosterFrames = boosterFrames.size();
+      int boosterFrameDelay = 100;
+      int currentBoosterFrameIndex =
+          SDL_GetTicks() / boosterFrameDelay % numberOfBoosterFrames;
+
+      // Render the booster texture
+      SDL_RenderCopyEx(renderer, boosterTexture,
+                       &boosterFrames[currentBoosterFrameIndex], &boosterDest,
+                       boosterAngle, NULL, SDL_FLIP_NONE);
+    }
   }
 
   if (!isAlive) {
@@ -171,7 +183,7 @@ void Player::Render(SDL_Renderer *renderer) {
     int frameDelay = 500;
     int currentFrame = SDL_GetTicks() / frameDelay % numberOfFrames;
 
-    // Draw small explosion as glowing wreckage 
+    // Draw small explosion as glowing wreckage
     if (hasExploded) {
       SDL_RenderCopy(renderer, explosionTexture, &explosionFrames[0],
                      &explosionDest);
@@ -183,19 +195,6 @@ void Player::Render(SDL_Renderer *renderer) {
         hasExploded = true;
       }
     }
-  }
-
-  // If isAccelerating is true, draw the thruster
-  if (isAccelerating) {
-    int numberOfBoosterFrames = boosterFrames.size();
-    int boosterFrameDelay = 100;
-    int currentBoosterFrameIndex =
-        SDL_GetTicks() / boosterFrameDelay % numberOfBoosterFrames;
-
-    // Render the booster texture
-    SDL_RenderCopyEx(renderer, boosterTexture,
-                     &boosterFrames[currentBoosterFrameIndex], &boosterDest,
-                     boosterAngle, NULL, SDL_FLIP_NONE);
   }
 }
 
