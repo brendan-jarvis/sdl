@@ -12,7 +12,7 @@
 #include "star.h"
 
 // NOTE: Globals
-int gameIsRunning = false;
+bool gameIsRunning = false;
 int lastFrameTime = 0;
 int frameCount = 0;
 float timeCount = 0.0f;
