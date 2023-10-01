@@ -7,9 +7,9 @@
 
 #include "SDL2/SDL_render.h"
 #include "asteroid.h"
+#include "background.h"
 #include "constants.h"
 #include "player.h"
-#include "star.h"
 
 // NOTE: Globals
 bool gameIsRunning = false;
@@ -20,7 +20,7 @@ float frameRate = 0.0f;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player *player;
-Star stars[100];
+int numberOfStars = 1000;
 std::vector<Asteroid> asteroids;
 SDL_Texture *backgroundTexture = NULL;
 SDL_Event event;
@@ -28,9 +28,6 @@ TTF_Font *font = nullptr;
 SDL_Texture *asteroidTexture = nullptr;
 
 void setup(void) {
-  // Seed random number generator
-  srand(time(NULL));
-
   // Create stars surface
   SDL_Surface *backgroundSurface = NULL;
   backgroundSurface =
@@ -40,12 +37,8 @@ void setup(void) {
   SDL_Renderer *tempRenderer = SDL_CreateSoftwareRenderer(backgroundSurface);
 
   // Draw stars onto the surface
-  for (int i = 0; i < 100; i++) {
-    SDL_SetRenderDrawColor(tempRenderer, stars[i].colour >> 16,
-                           (stars[i].colour >> 8) & 0xFF,
-                           stars[i].colour & 0xFF, 255);
-    SDL_RenderDrawPoint(tempRenderer, stars[i].x, stars[i].y);
-  }
+  Background background(tempRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+  background.drawStars(numberOfStars);
 
   // Create texture from surface pixels
   backgroundTexture = SDL_CreateTextureFromSurface(renderer, backgroundSurface);
