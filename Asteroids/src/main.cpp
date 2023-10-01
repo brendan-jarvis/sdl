@@ -27,14 +27,36 @@ SDL_Event event;
 TTF_Font *font = nullptr;
 SDL_Texture *asteroidTexture = nullptr;
 
-void setup(void) {
-  // Create stars surface
+void setup() {
+  // Create background surface
   SDL_Surface *backgroundSurface = NULL;
   backgroundSurface =
       SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
 
-  // Create a temporary SDL_Renderer to draw on the surface
+  // Create a temporary SDL_Renderer to draw on the background surface
   SDL_Renderer *tempRenderer = SDL_CreateSoftwareRenderer(backgroundSurface);
+
+  // Draw image onto the surface
+  SDL_Surface *backgroundImage =
+      IMG_Load("../assets/backgrounds/Large 1024x1024/Blue "
+               "Nebula/Blue_Nebula_01-1024x1024.png");
+  if (!backgroundImage) {
+    std::cout << "Failed to load background image: " << IMG_GetError()
+              << std::endl;
+  }
+  SDL_Texture *texture =
+      SDL_CreateTextureFromSurface(tempRenderer, backgroundImage);
+  SDL_FreeSurface(backgroundImage);
+
+  // Set the position and size of the background image
+  // Align background image to the center of the screen
+  SDL_Rect dst;
+  dst.x = -(backgroundSurface->w - SCREEN_WIDTH) / 2;
+  dst.y = -(backgroundSurface->h - SCREEN_HEIGHT) / 2;
+  SDL_QueryTexture(texture, NULL, NULL, &dst.w, &dst.h);
+
+  SDL_RenderCopy(tempRenderer, texture, NULL, &dst);
+  SDL_DestroyTexture(texture);
 
   // Draw stars onto the surface
   Background background(tempRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
