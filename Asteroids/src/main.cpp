@@ -3,8 +3,9 @@
 #include <SDL_ttf.h>
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
-
+#include <random>
 #include "SDL2/SDL_render.h"
 #include "asteroid.h"
 #include "background.h"
@@ -12,6 +13,8 @@
 #include "player.h"
 
 // NOTE: Globals
+std::random_device rd;
+std::mt19937 gen(rd());
 bool gameIsRunning = false;
 int lastFrameTime = 0;
 int frameCount = 0;
@@ -21,6 +24,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 Player *player;
 int numberOfStars = 1000;
+std::vector<std::string> backgroundImages;
 std::vector<Asteroid> asteroids;
 SDL_Texture *backgroundTexture = NULL;
 SDL_Event event;
@@ -28,6 +32,13 @@ TTF_Font *font = nullptr;
 SDL_Texture *asteroidTexture = nullptr;
 
 void setup() {
+  // Scan the assets/backgrounds directory for png files
+  backgroundImages = Background::getBackgroundImages();
+
+  // Select a random background image
+  std::uniform_int_distribution<> dis(0, backgroundImages.size() - 1);
+  std::string randomBackgroundImage = backgroundImages[dis(gen)];
+
   // Create background surface
   SDL_Surface *backgroundSurface = NULL;
   backgroundSurface =
@@ -37,9 +48,7 @@ void setup() {
   SDL_Renderer *tempRenderer = SDL_CreateSoftwareRenderer(backgroundSurface);
 
   // Draw image onto the surface
-  SDL_Surface *backgroundImage =
-      IMG_Load("../assets/backgrounds/Large 1024x1024/Blue "
-               "Nebula/Blue_Nebula_01-1024x1024.png");
+  SDL_Surface *backgroundImage = IMG_Load(randomBackgroundImage.c_str());
   if (!backgroundImage) {
     std::cout << "Failed to load background image: " << IMG_GetError()
               << std::endl;
@@ -48,14 +57,7 @@ void setup() {
       SDL_CreateTextureFromSurface(tempRenderer, backgroundImage);
   SDL_FreeSurface(backgroundImage);
 
-  // Set the position and size of the background image
-  // Align background image to the center of the screen
-  SDL_Rect dst;
-  dst.x = -(backgroundSurface->w - SCREEN_WIDTH) / 2;
-  dst.y = -(backgroundSurface->h - SCREEN_HEIGHT) / 2;
-  SDL_QueryTexture(texture, NULL, NULL, &dst.w, &dst.h);
-
-  SDL_RenderCopy(tempRenderer, texture, NULL, &dst);
+  SDL_RenderCopy(tempRenderer, texture, NULL, NULL);
   SDL_DestroyTexture(texture);
 
   // Draw stars onto the surface

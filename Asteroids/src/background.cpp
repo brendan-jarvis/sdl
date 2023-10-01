@@ -14,6 +14,20 @@ Background::Background(SDL_Renderer *renderer, int width, int height)
       gen(std::random_device()()), dis(0, starColours.size() - 1),
       perlin(gen()), frequency(0.01), threshold(0.1) {}
 
+std::vector<std::string> Background::getBackgroundImages() {
+  std::vector<std::string> pngFiles;
+  std::string path = "../assets/backgrounds";
+  
+  for (const auto &entry :
+       std::filesystem::recursive_directory_iterator(path)) {
+    if (entry.path().extension() == ".png") {
+      pngFiles.push_back(entry.path().string());
+    }
+  }
+  
+  return pngFiles;
+}
+
 int Background::getStarColour(float noise) {
   int index = (int)(noise * starColours.size());
   return starColours[index];
