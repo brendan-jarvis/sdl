@@ -1,16 +1,16 @@
-#include <SDL2/SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include <cmath>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <random>
 #include "SDL2/SDL_render.h"
 #include "asteroid.h"
 #include "background.h"
 #include "constants.h"
 #include "player.h"
+#include <SDL2/SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <cmath>
+#include <iostream>
+#include <random>
+#include <string>
+#include <vector>
 
 // NOTE: Globals
 std::random_device rd;
@@ -131,6 +131,9 @@ void processInput(void) {
       case SDLK_ESCAPE:
         gameIsRunning = false;
         break;
+      case SDLK_SPACE:
+        player->Fire();
+        break;
       case SDLK_r:
         player->Reset();
         break;
@@ -146,6 +149,9 @@ void processInput(void) {
         break;
       case SDLK_RIGHT:
         player->StopRotating();
+        break;
+      case SDLK_SPACE:
+        player->StopFiring();
         break;
       }
       break;
@@ -181,7 +187,7 @@ void updateGame(void) {
   lastFrameTime = currentTime;
 
   // Update player
-  player->Update(deltaTime);
+  player->Update(deltaTime, renderer);
 
   // Check for collision between asteroids
   for (int i = 0; i < asteroids.size(); i++) {
@@ -234,6 +240,16 @@ void updateGame(void) {
     }
   }
 
+  // Update the bullets
+  for (int i = 0; i < player->bullets.size(); i++) {
+    if (player->bullets[i]->isAlive) {
+      player->bullets[i]->Update(deltaTime);
+    } else {
+      delete player->bullets[i];
+      player->bullets.erase(player->bullets.begin() + i);
+    }
+  }
+
   // Calculate frame rate
   calculateFramerate(deltaTime);
 }
@@ -248,6 +264,12 @@ void renderOutput(void) {
   // Draw the asteroids
   for (int i = 0; i < 10; i++) {
     asteroids[i].Render(renderer);
+  }
+
+  // Draw the projectiles
+  for (int i = 0; i < player->bullets.size(); i++) {
+    player->bullets[i]->Render(renderer);
+    std::cout << "bullets: " << player->bullets.size() << std::endl;
   }
 
   // Draw the player
