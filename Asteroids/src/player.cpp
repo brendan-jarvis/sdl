@@ -1,9 +1,4 @@
 #include "player.h"
-#include "SDL2/SDL_render.h"
-#include "SDL2_image/SDL_image.h"
-#include "constants.h"
-#include <iostream>
-#include <vector>
 
 Player::Player(SDL_Renderer *renderer) {
   this->centerX = SCREEN_WIDTH / 2.0;
@@ -19,6 +14,7 @@ Player::Player(SDL_Renderer *renderer) {
   this->lives = 3;
   this->friction = 0.7;
   this->hasExploded = false;
+  this->isFiring = false;
 
   // Load textures
   this->explosionTexture =
@@ -79,6 +75,7 @@ void Player::Reset(void) {
   this->lives -= 1;
   this->friction = 0.7;
   this->hasExploded = false;
+  this->isFiring = false;
 }
 
 void Player::Accelerate(void) { isAccelerating = true; }
@@ -91,7 +88,14 @@ void Player::RotateRight(void) { rotation = -turnspeed; }
 
 void Player::StopRotating(void) { rotation = 0; }
 
-void Player::Update(float delta_time) {
+void Player::Fire(void) {
+  std::cout << "Fire!" << std::endl;
+  this->isFiring = true;
+}
+
+void Player::StopFiring(void) { this->isFiring = false; }
+
+void Player::Update(float delta_time, SDL_Renderer *renderer) {
   // Update player angle with rotation
   angle += rotation * delta_time;
 
@@ -151,6 +155,12 @@ void Player::Update(float delta_time) {
   boosterDest.y = centerY + offset_Y - radius;
   boosterDest.w = radius * 2;
   boosterDest.h = radius * 2;
+
+  // Spawn a bullet
+  if (isFiring) {
+    Bullet *bullet = new Bullet(linePoints[0].x, linePoints[0].y, angle);
+    bullets.push_back(bullet);
+  }
 }
 
 void Player::Render(SDL_Renderer *renderer) {
