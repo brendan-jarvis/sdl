@@ -1,6 +1,11 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <vector>
+#include "SDL2/SDL_render.h"
+#include "SDL2_image/SDL_image.h"
+#include "constants.h"
+#include <iostream>
+#include "bullet.h"
 
 class Player {
 public:
@@ -8,10 +13,11 @@ public:
       turnspeed, angle, friction, rotation, boosterAngle;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
-  bool isAlive, isAccelerating, hasExploded;
+  bool isAlive, isAccelerating, isFiring, hasExploded;
   SDL_Texture *explosionTexture, *boosterTexture;
   SDL_Rect explosionRect, boosterRect, explosionDest, boosterDest;
   std::vector<SDL_Rect> explosionFrames, boosterFrames;
+  std::vector<Bullet *> bullets; // Vector of pointers to Bullet objects
 
   Player(SDL_Renderer *renderer);
   ~Player();
@@ -21,6 +27,8 @@ public:
   void RotateLeft(void);
   void RotateRight(void);
   void StopRotating(void);
-  void Update(float current_time);
+  void Fire(void);
+  void StopFiring(void);
+  void Update(float current_time, SDL_Renderer *renderer);
   void Render(SDL_Renderer *renderer);
 };
