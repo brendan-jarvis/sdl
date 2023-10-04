@@ -30,6 +30,7 @@ SDL_Texture *backgroundTexture = NULL;
 SDL_Event event;
 TTF_Font *font = nullptr;
 SDL_Texture *asteroidTexture = nullptr;
+SDL_Texture *bulletTexture = nullptr;
 
 void setup() {
   // Scan the assets/backgrounds directory for png files
@@ -78,6 +79,15 @@ void setup() {
   for (int i = 0; i < 10; i++) {
     asteroids.push_back(
         Asteroid(renderer, SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0));
+  }
+
+  // Load the bullet texture
+  SDL_Texture *bulletTexture =
+      IMG_LoadTexture(renderer, "../assets/sprites/projectiles.png");
+
+  if (!bulletTexture) {
+    std::cout << "Failed to load bullet texture: " << SDL_GetError()
+              << std::endl;
   }
 }
 
@@ -268,8 +278,7 @@ void renderOutput(void) {
 
   // Draw the projectiles
   for (int i = 0; i < player->bullets.size(); i++) {
-    player->bullets[i]->Render(renderer);
-    std::cout << "bullets: " << player->bullets.size() << std::endl;
+    player->bullets[i]->Render(renderer, bulletTexture);
   }
 
   // Draw the player
