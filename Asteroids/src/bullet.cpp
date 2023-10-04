@@ -2,8 +2,8 @@
 #include "constants.h"
 
 Bullet::Bullet(float playerX, float playerY, float angle) {
-  width = 1;
-  height = 3;
+  width = 2;
+  height = 6;
   speed = 200;
 
   // Set the bullet's initial position
@@ -40,7 +40,7 @@ void Bullet::Update(float delta_time) {
 
 void Bullet::Render(SDL_Renderer *renderer) {
   // Set the bullet's drawing color
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 
   // Draw the bullet
   SDL_RenderFillRect(renderer, &bulletDest);
