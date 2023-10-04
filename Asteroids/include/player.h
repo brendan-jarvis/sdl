@@ -10,7 +10,7 @@
 class Player {
 public:
   float centerX, centerY, acceleration, acceleration_X, acceleration_Y,
-      turnspeed, angle, friction, rotation, boosterAngle;
+      turnspeed, angle, friction, rotation, boosterAngle, firingSpeed, firingTimer;
   int lives, score, radius, size;
   SDL_Point linePoints[4];
   bool isAlive, isAccelerating, isFiring, hasExploded;

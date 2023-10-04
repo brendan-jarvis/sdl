@@ -15,6 +15,8 @@ Player::Player(SDL_Renderer *renderer) {
   this->friction = 0.7;
   this->hasExploded = false;
   this->isFiring = false;
+  this->firingSpeed = 0.5;
+  this->firingTimer = firingSpeed;
 
   // Load textures
   this->explosionTexture =
@@ -76,6 +78,8 @@ void Player::Reset(void) {
   this->friction = 0.7;
   this->hasExploded = false;
   this->isFiring = false;
+  this->firingSpeed = 0.5;
+  this->firingTimer = firingSpeed;
 }
 
 void Player::Accelerate(void) { isAccelerating = true; }
@@ -89,11 +93,13 @@ void Player::RotateRight(void) { rotation = -turnspeed; }
 void Player::StopRotating(void) { rotation = 0; }
 
 void Player::Fire(void) {
-  std::cout << "Fire!" << std::endl;
   this->isFiring = true;
 }
 
-void Player::StopFiring(void) { this->isFiring = false; }
+void Player::StopFiring(void) {
+  this->isFiring = false;
+  firingTimer = firingSpeed;
+}
 
 void Player::Update(float delta_time, SDL_Renderer *renderer) {
   // Update player angle with rotation
@@ -158,8 +164,13 @@ void Player::Update(float delta_time, SDL_Renderer *renderer) {
 
   // Spawn a bullet
   if (isFiring) {
-    Bullet *bullet = new Bullet(linePoints[0].x, linePoints[0].y, angle);
-    bullets.push_back(bullet);
+    firingTimer += delta_time;
+    if (firingTimer >= firingSpeed) {
+      // Create a new bullet and reset timer
+      Bullet *bullet = new Bullet(linePoints[0].x, linePoints[0].y, angle);
+      bullets.push_back(bullet);
+      firingTimer = 0.0f;
+    }
   }
 }
 
