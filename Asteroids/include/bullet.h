@@ -6,15 +6,15 @@
 
 class Bullet {
 public:
-  float centerX, centerY, dX, dY;
+  float centerX, centerY, dX, dY, angle;
   int width, height, speed;
   bool isAlive;
   SDL_Texture *bulletTexture;
-  SDL_Rect bulletRect, bulletDest;
+  SDL_Rect bulletSrc, bulletDest;
 
   Bullet(float playerX, float playerY, float playerAngle);
   void Update(float deltaTime);
-  void Render(SDL_Renderer *renderer);
+  void Render(SDL_Renderer *renderer, SDL_Texture *bulletTexture);
   bool CheckAsteroidCollision(Asteroid *asteroid);
   bool CheckPlayerCollision(float playerX, float playerY);
   ~Bullet();
